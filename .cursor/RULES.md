@@ -317,3 +317,11 @@ Performance Considerations:
 </PLANNING>
 ```
 
+## Development Standards
+
+### Package Management
+- Use Yarn exclusively for package management
+- Do not mix npm and Yarn commands
+- Document all dependencies in package.json
+- Keep yarn.lock in version control
+

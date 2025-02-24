@@ -19,7 +19,7 @@ For detailed architecture, design decisions, and development roadmap, see our [P
 ### Prerequisites
 
 - Node.js 18+
-- npm or yarn
+- Yarn
 
 ### Installation
 
@@ -33,26 +33,37 @@ cd CFSBPermissionsApp
 2. Install dependencies:
 
 ```bash
-npm install
-# or
 yarn install
 ```
 
-3. Create a `.env.local` file in the root directory:
+3. Initialize Shadcn UI:
+
+```bash
+npx shadcn-ui@latest init
+```
+
+When prompted, select these options:
+- Style: Default
+- Base color: Slate
+- CSS variables: Yes
+- Tailwind CSS config: Yes
+- Components directory: src/components
+- Utilities directory: src/lib/utils
+- Include example components: No
+
+4. Create a `.env.local` file in the root directory:
 
 ```env
 NEXT_PUBLIC_API_URL="your-api-url-here"
 ```
 
-4. Start the development server:
+5. Start the development server:
 
 ```bash
-npm run dev
-# or
 yarn dev
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+6. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Project Structure
 
@@ -60,6 +71,8 @@ yarn dev
 src/
 ├── app/           # Next.js App Router pages and layouts
 ├── components/    # React components
+│   ├── ui/       # Shadcn UI components
+│   └── shared/   # Reusable components
 ├── lib/          # External client setup
 ├── types/        # TypeScript type definitions
 ├── utils/        # Utility functions
@@ -68,21 +81,40 @@ src/
 
 ## Development Commands
 
-| Script      | npm              | yarn           | Description                   |
-|-------------|-----------------|----------------|-------------------------------|
-| Development | `npm run dev`   | `yarn dev`     | Start development server     |
-| Build       | `npm run build` | `yarn build`   | Build production bundle      |
-| Start       | `npm run start` | `yarn start`   | Start production server      |
-| Lint        | `npm run lint`  | `yarn lint`    | Run ESLint                   |
-| Type Check  | `npm typecheck` | `yarn typecheck`| Run TypeScript compiler     |
+| Script      | Command         | Description                   |
+|-------------|----------------|-------------------------------|
+| Development | `yarn dev`     | Start development server     |
+| Build       | `yarn build`   | Build production bundle      |
+| Start       | `yarn start`   | Start production server      |
+| Lint        | `yarn lint`    | Run ESLint                   |
+| Type Check  | `yarn typecheck`| Run TypeScript compiler     |
+
+## Adding Shadcn UI Components
+
+To add individual components from Shadcn UI:
+
+```bash
+npx shadcn-ui@latest add [component-name]
+# Example: npx shadcn-ui@latest add button
+```
+
+Common components we'll use:
+- button
+- table
+- dialog
+- dropdown-menu
+- input
+- select
+- checkbox
+- toast
 
 ## Built With
 
 - [Next.js 14](https://nextjs.org/) - React framework
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
 - [Tailwind CSS](https://tailwindcss.com/) - Styling
-- [React Query](https://tanstack.com/query) - State management
 - [Shadcn UI](https://ui.shadcn.com/) - UI components
+- [React Query](https://tanstack.com/query) - State management
 - [React Hook Form](https://react-hook-form.com/) - Form handling
 - [Zod](https://zod.dev/) - Data validation
 
