@@ -21,9 +21,13 @@ export function UserList() {
       </div>
       <div className='border rounded-lg divide-y'>
         {users?.map(user => (
-          <div key={user.oid} className='p-4'>
-            <div className='font-medium'>{user.username}</div>
-            <div className='text-sm text-gray-500'>{user.email}</div>
+          <div key={user.oid} className='p-4 space-y-1'>
+            <div className='font-bold'>
+              {user.firstname} {user.lastname}
+            </div>
+            <div>{user.email}</div>
+            <div>{user.country || 'No country specified'}</div>
+            <div className='text-gray-400 text-sm'>OID: {user.oid}</div>
           </div>
         ))}
       </div>
