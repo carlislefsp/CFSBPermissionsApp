@@ -25,3 +25,15 @@ export interface User {
   updated?: string;
   groups?: Group[];
 }
+
+/**
+ * Interface for GroupUserPermission.
+ * Represents the relationship between a user, group, and permission
+ */
+export interface GroupUserPermission {
+  userid: string;
+  groupid: string;
+  permissionid: string;
+  created?: string;
+  updated?: string;
+}
