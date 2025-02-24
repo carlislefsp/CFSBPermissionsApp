@@ -95,25 +95,47 @@ You are an expert full-stack developer proficient in TypeScript, React, Next.js,
 ### Directory Structure
 
 ```
-app/
-├── __tests__/          # Test files mirroring component structure
-├── components/         # React components
-│   ├── users/         # User management components
-│   ├── groups/        # Group management components
-│   ├── permissions/   # Permission management components
-│   └── shared/        # Reusable components
-├── context/           # React Context providers
-├── data/             # Data files and utilities
-│   ├── api/          # API-related functions
-│   └── schemas/      # Data validation schemas
-├── types/            # TypeScript type definitions
-├── utils/            # Utility functions
-│   ├── permissions/  # Permission checking utilities
-│   ├── validation/   # Input validation helpers
-│   └── format/       # Formatting helpers
-├── styles/           # Global styles
-└── lib/              # Third-party integrations
+src/
+├── app/              # Next.js App Router pages and layouts
+│   ├── api/         # API routes
+│   └── layout.tsx   # Root layout
+├── components/       # React components
+│   ├── users/       # User management components
+│   └── shared/      # Reusable components (tables, filters, etc.)
+├── lib/             # External client setup (React Query, etc.)
+├── types/           # TypeScript type definitions
+├── utils/           # Utility functions
+└── hooks/           # Custom React hooks
 ```
+
+### Type Definition Strategy
+
+1. **Shared Types** (`/src/types/`)
+
+   - Core business interfaces (User, Group, Permission)
+   - Shared utility types
+   - API response types
+   - Global state types
+
+2. **Component Types** (colocated)
+   - Component prop interfaces
+   - Component-specific unions/types
+   - Local state types
+   - Event handler types
+
+Example:
+
+```
+src/
+├── types/
+│   ├── user.ts         # { User, UserRole, UserStatus }
+│   └── group.ts        # { Group, GroupType }
+└── components/
+    └── users/
+        ├── UserList.tsx
+        └── types.ts    # { UserListProps, SortDirection }
+```
+
 
 ### File Naming
 
@@ -126,11 +148,10 @@ app/
 
 - Keep related files close:
   ```
-  components/timeline/
-  ├── TimelineGrid.tsx
-  ├── TimelineGrid.test.tsx
-  ├── TimelineGrid.types.ts
-  └── index.ts         # Barrel exports
+  components/users/
+  ├── UserList.tsx
+  ├── UserSearch.tsx
+  └── types.ts
   ```
 
 ### Module Boundaries
@@ -295,3 +316,4 @@ Performance Considerations:
 - Memoized permission checks
 </PLANNING>
 ```
+
