@@ -9,23 +9,46 @@ export class ApiService {
     endpoint: string,
     options: RequestInit = {},
   ): Promise<T> {
+    if (!this.baseUrl || !this.apiCode) {
+      throw new Error('Missing API configuration');
+    }
+
     const url = new URL(`${this.baseUrl}${endpoint}`);
-    // Add API code as query parameter
-    url.searchParams.append('code', this.apiCode || '');
+    url.searchParams.append('code', this.apiCode);
 
     const response = await fetch(url.toString(), {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        // Add any auth headers here
         ...options.headers,
       },
     });
 
     if (!response.ok) {
-      throw new Error(`API error: ${response.statusText}`);
+      switch (response.status) {
+        case 400:
+          throw new Error('Invalid request parameters');
+        case 404:
+          throw new Error('Resource not found');
+        case 409:
+          throw new Error('Resource conflict');
+        default:
+          throw new Error(`API error: ${response.statusText}`);
+      }
     }
 
     return response.json();
+  }
+
+  protected static async fetchWithPagination<T>(
+    endpoint: string,
+    limit?: number,
+    offset?: number,
+    options: RequestInit = {},
+  ): Promise<T> {
+    const url = new URL(`${this.baseUrl}${endpoint}`);
+    if (limit) url.searchParams.append('limit', limit.toString());
+    if (offset) url.searchParams.append('offset', offset.toString());
+    return this.fetch<T>(url.pathname + url.search, options);
   }
 }
