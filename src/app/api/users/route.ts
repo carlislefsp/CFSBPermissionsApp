@@ -3,20 +3,25 @@ import { UserService } from '@/services/users';
 
 export async function GET() {
   try {
-    // Validate environment variables
     if (
       !process.env.PERMISSION_API_BASE_URL ||
       !process.env.PERMISSION_API_CODE
     ) {
-      throw new Error('Missing required environment variables');
+      return NextResponse.json(
+        { error: 'API configuration error' },
+        { status: 500 },
+      );
     }
 
     const users = await UserService.getUsers();
-    return NextResponse.json(users);
+    return NextResponse.json(users || []);
   } catch (error) {
-    console.error('Error fetching users:', error);
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
     return NextResponse.json(
-      { error: 'Failed to fetch users' },
+      { error: 'Unknown error occurred' },
       { status: 500 },
     );
   }
