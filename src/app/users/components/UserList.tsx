@@ -1,6 +1,6 @@
 'use client';
 
-import { useUsers } from '@/hooks/useUsers';
+import { useUsers } from '../hooks/useUsers';
 
 export function UserList() {
   const { data: users, isLoading, error } = useUsers();
@@ -22,16 +22,8 @@ export function UserList() {
       <div className='border rounded-lg divide-y'>
         {users?.map(user => (
           <div key={user.oid} className='p-4'>
-            <div className='font-medium'>
-              {user.firstname} {user.lastname}
-              <span className='text-gray-500 ml-2'>({user.username})</span>
-            </div>
+            <div className='font-medium'>{user.username}</div>
             <div className='text-sm text-gray-500'>{user.email}</div>
-            {user.groups && user.groups.length > 0 && (
-              <div className='text-sm text-gray-500 mt-1'>
-                Groups: {user.groups.map(g => g.name).join(', ')}
-              </div>
-            )}
           </div>
         ))}
       </div>

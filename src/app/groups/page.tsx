@@ -1,4 +1,4 @@
-import { GroupList } from '@/components/groups/GroupList';
+import { GroupList } from './components/GroupList';
 
 export default function GroupsPage() {
   return (

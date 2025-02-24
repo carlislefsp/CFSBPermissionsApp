@@ -1,6 +1,6 @@
 'use client';
 
-import { useGroups } from '@/hooks/useGroups';
+import { useGroups } from '../hooks/useGroups';
 
 export function GroupList() {
   const { data: groups, isLoading, error } = useGroups();
@@ -26,11 +26,6 @@ export function GroupList() {
             <div className='text-sm text-gray-500'>
               Type: {group.typename || 'N/A'}
             </div>
-            {group.localid && (
-              <div className='text-sm text-gray-500'>
-                Local ID: {group.localid}
-              </div>
-            )}
           </div>
         ))}
       </div>
