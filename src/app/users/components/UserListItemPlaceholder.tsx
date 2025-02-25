@@ -11,18 +11,30 @@
  */
 export function UserListItemPlaceholder() {
   return (
-    <div
+    <article
       className='p-4 grid grid-cols-2 gap-4 animate-pulse'
       aria-label='Loading user information'
     >
       <div className='space-y-2'>
-        <div className='h-4 bg-gray-200 rounded w-3/4'></div>
-        <div className='h-4 bg-gray-200 rounded w-1/2'></div>
-        <div className='h-4 bg-gray-200 rounded w-1/4'></div>
+        <div
+          className='h-4 bg-gray-200 rounded w-3/4'
+          role='presentation'
+        ></div>
+        <div
+          className='h-4 bg-gray-200 rounded w-1/2'
+          role='presentation'
+        ></div>
+        <div
+          className='h-4 bg-gray-200 rounded w-1/4'
+          role='presentation'
+        ></div>
       </div>
       <div className='space-y-2'>
-        <div className='h-4 bg-gray-200 rounded w-1/2'></div>
+        <div
+          className='h-4 bg-gray-200 rounded w-1/2'
+          role='presentation'
+        ></div>
       </div>
-    </div>
+    </article>
   );
 }
