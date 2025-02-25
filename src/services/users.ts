@@ -60,4 +60,8 @@ export class UserService extends ApiService {
       },
     );
   }
+
+  static async getAllUserGroups(): Promise<Record<string, Group[]>> {
+    return this.fetch<Record<string, Group[]>>('/user-groups');
+  }
 }
