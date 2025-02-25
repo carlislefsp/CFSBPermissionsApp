@@ -25,12 +25,18 @@ interface LazyUserListItemProps {
   user: User;
 }
 
+interface UserListProps {
+  filterFn?: (user: User) => boolean;
+}
+
 /**
  * Displays a paginated list of users with their information
  * Implements lazy loading for both list items and their associated groups
+ * @param props.filterFn - Optional function to filter users
  */
-export function UserList() {
-  const { data: users, isLoading, error } = useUsers();
+export function UserList({ filterFn }: UserListProps) {
+  const { data: users = [], isLoading, error } = useUsers();
+  const filteredUsers = filterFn ? users.filter(filterFn) : users;
 
   if (isLoading)
     return (
@@ -47,13 +53,14 @@ export function UserList() {
 
   return (
     <div className='space-y-4'>
-      <div className='flex'>
-        <h2 role='status' aria-live='polite' aria-label='Total number of users'>
-          {users?.length ?? 0} users
-        </h2>
+      <div className='flex text-sm text-muted-foreground'>
+        <p>
+          Showing {filteredUsers.length}{' '}
+          {filteredUsers.length === 1 ? 'user' : 'users'}
+        </p>
       </div>
       <ul className='border rounded-lg' role='list' aria-label='User list'>
-        {users?.map(user => (
+        {filteredUsers.map(user => (
           <LazyUserListItem key={user.oid} user={user} />
         ))}
       </ul>
