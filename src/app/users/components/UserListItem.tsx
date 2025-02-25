@@ -77,34 +77,45 @@ export function UserListItem({ user }: UserListItemProps) {
               Loading groups...
             </div>
           ) : (
-            <div className='space-y-2'>
+            <div className='space-y-3'>
               {groups && groups.length > 0 ? (
                 <div
-                  className='flex flex-wrap gap-2'
+                  className='space-y-3'
                   role='group'
                   aria-label={`Groups for ${user.firstname} ${user.lastname}`}
                 >
-                  {groups.map(group => {
-                    const type = groupTypes.find(t => t.id === group.typeid);
-                    if (!type) return null;
+                  {groupTypes.map(type => {
+                    const typeGroups = groups.filter(
+                      group => group.typeid === type.id,
+                    );
+                    if (typeGroups.length === 0) return null;
 
                     return (
-                      <label
-                        key={group.id}
-                        className='flex items-center gap-2 text-sm px-2 py-1 rounded cursor-pointer hover:bg-gray-50'
-                      >
-                        <Checkbox
-                          checked={true}
-                          style={
-                            {
-                              '--checkbox-color': `var(${type.colorVar})`,
-                            } as React.CSSProperties
-                          }
-                          className='border-[var(--checkbox-color)] data-[state=checked]:bg-[var(--checkbox-color)] data-[state=checked]:border-[var(--checkbox-color)]'
-                          aria-label={`Toggle ${group.name} group`}
-                        />
-                        {group.name}
-                      </label>
+                      <div key={type.id} className='space-y-2'>
+                        <h4 className='text-xs font-medium text-muted-foreground'>
+                          {type.name}
+                        </h4>
+                        <div className='flex flex-wrap gap-2'>
+                          {typeGroups.map(group => (
+                            <label
+                              key={group.id}
+                              className='flex items-center gap-2 text-sm px-2 py-1 rounded cursor-pointer hover:bg-gray-50'
+                            >
+                              <Checkbox
+                                checked={true}
+                                style={
+                                  {
+                                    '--checkbox-color': `var(${type.colorVar})`,
+                                  } as React.CSSProperties
+                                }
+                                className='border-[var(--checkbox-color)] data-[state=checked]:bg-[var(--checkbox-color)] data-[state=checked]:border-[var(--checkbox-color)]'
+                                aria-label={`Toggle ${group.name} group`}
+                              />
+                              {group.name}
+                            </label>
+                          ))}
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
