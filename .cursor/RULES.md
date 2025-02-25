@@ -84,11 +84,39 @@ You are an expert full-stack developer proficient in TypeScript, React, Next.js,
 
 ## Naming Conventions
 
-- Components: PascalCase
-- Files: kebab-case
+- Components and Component Files: PascalCase
+  ```typescript
+  // Component name and its file:
+  UserList.tsx        // Contains: export function UserList()
+  UserListItem.tsx    // Contains: export function UserListItem()
+  Button.tsx         // Contains: export function Button()
+  ```
+
+- Non-Component Files: kebab-case
+  ```typescript
+  // Utilities, configs, etc:
+  date-helpers.ts
+  api-utils.ts
+  form-validation.ts
+  ```
+
 - Functions: camelCase
+  ```typescript
+  function handleSubmit()
+  function formatDate()
+  ```
+
 - Types/Interfaces: PascalCase
+  ```typescript
+  interface UserProps
+  type ButtonVariant
+  ```
+
 - Constants: SCREAMING_SNAKE_CASE
+  ```typescript
+  const MAX_ITEMS = 10
+  const API_BASE_URL = '/api'
+  ```
 
 ## File Organization
 
@@ -96,16 +124,17 @@ You are an expert full-stack developer proficient in TypeScript, React, Next.js,
 
 ```
 src/
-├── app/              # Next.js App Router pages and layouts
-│   ├── api/         # API routes
-│   └── layout.tsx   # Root layout
-├── components/       # React components
-│   ├── users/       # User management components
-│   └── shared/      # Reusable components (tables, filters, etc.)
-├── lib/             # External client setup (React Query, etc.)
-├── types/           # TypeScript type definitions
-├── utils/           # Utility functions
-└── hooks/           # Custom React hooks
+├── app/
+│   ├── users/              # User section
+│   │   ├── components/     # User-specific components
+│   │   ├── hooks/         # User-specific hooks
+│   │   └── types/         # User-specific types
+│   └── groups/            # Group section
+│       ├── components/    # Group-specific components
+│       └── hooks/        # Group-specific hooks
+├── components/           # Shared components only
+├── hooks/               # Shared hooks
+└── types/              # Shared types
 ```
 
 ### Type Definition Strategy
@@ -123,18 +152,6 @@ src/
    - Local state types
    - Event handler types
 
-Example:
-
-```
-src/
-├── types/
-│   ├── user.ts         # { User, UserRole, UserStatus }
-│   └── group.ts        # { Group, GroupType }
-└── components/
-    └── users/
-        ├── UserList.tsx
-        └── types.ts    # { UserListProps, SortDirection }
-```
 
 
 ### File Naming
@@ -230,10 +247,9 @@ src/
 **Process**:
 
 1. **Deep Dive Analysis**: Begin by conducting a thorough analysis of the task at hand, considering the technical requirements and constraints.
-2. **Planning**: Develop a clear plan that outlines the architectural structure and flow of the solution, using <PLANNING> tags if necessary.
-3. **Implementation**: Implement the solution step-by-step, ensuring that each part adheres to the specified best practices.
-4. **Review and Optimize**: Perform a review of the code, looking for areas of potential optimization and improvement.
-5. **Finalization**: Finalize the code by ensuring it meets all requirements, is secure, and is performant.
+2. **Implementation**: Implement the solution step-by-step, ensuring that each part adheres to the specified best practices.
+3. **Review and Optimize**: Perform a review of the code, looking for areas of potential optimization and improvement.
+4. **Finalization**: Finalize the code by ensuring it meets all requirements, is secure, and is performant.
 
 ## Testing
 
@@ -276,46 +292,6 @@ src/
 export function UserTable({ ... })
 ```
 
-**Planning Example:**
-
-```
-<PLANNING>
-Component: GroupPermissionManager
-Purpose: Manage permissions for a specific group
-
-Dependencies:
-- api/groups.ts: Group management API calls
-- api/permissions.ts: Permission management API calls
-- types/index.ts: User, Group, Permission type definitions
-
-Props:
-- groupId: string (required) - ID of the group to manage
-- users: User[] (required) - List of users in the group
-- availablePermissions: Permission[] (required) - All possible permissions
-
-State:
-- selectedUsers: string[] - Currently selected user IDs
-- groupPermissions: Record<string, string[]> - User permissions mapping
-- isLoading: boolean - Loading state for API calls
-
-Key Features:
-1. User selection and bulk actions
-2. Permission assignment interface
-3. Role-based access control
-4. Audit logging
-
-Accessibility:
-- Keyboard navigation for tables
-- ARIA labels for interactive elements
-- Clear error messaging
-
-Performance Considerations:
-- Pagination for large user lists
-- Debounced search
-- Optimistic updates
-- Memoized permission checks
-</PLANNING>
-```
 
 ## Development Standards
 
