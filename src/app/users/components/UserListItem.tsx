@@ -13,6 +13,8 @@ import React from 'react';
 
 // Components
 import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { Pencil, X } from 'lucide-react';
 
 // Hooks
 import { useUserGroups } from '../hooks/useUserGroups';
@@ -38,11 +40,150 @@ export interface UserListItemProps {
  * @param props.user - User object containing profile information
  */
 export function UserListItem({ user }: UserListItemProps) {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [hasOverflow, setHasOverflow] = React.useState(false);
+  const groupsContainerRef = React.useRef<HTMLDivElement>(null);
   const { data: groups = [], isLoading: groupsLoading } = useUserGroups(
     user.oid,
     {
       enabled: true,
     },
+  );
+
+  React.useLayoutEffect(() => {
+    if (!groupsContainerRef.current) return;
+
+    const checkOverflow = () => {
+      const container = groupsContainerRef.current;
+      if (!container) return;
+
+      setHasOverflow(container.scrollHeight > container.clientHeight);
+    };
+
+    // Check initially
+    checkOverflow();
+
+    // Set up resize observer
+    const resizeObserver = new ResizeObserver(checkOverflow);
+    resizeObserver.observe(groupsContainerRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [groups]); // Re-run when groups change
+
+  const renderClosedView = () => {
+    const groupsByType = groupTypes
+      .map(type => ({
+        type,
+        groups: groups.filter(group => group.typeid === type.id),
+      }))
+      .filter(({ groups }) => groups.length > 0);
+
+    const totalGroups = groups.length;
+
+    return (
+      <div className='flex items-start gap-4'>
+        <div className='flex-1'>
+          <div
+            ref={groupsContainerRef}
+            className='flex flex-wrap gap-2 h-[5.5rem] overflow-hidden'
+          >
+            {groupsByType.map(({ type, groups: typeGroups }) => (
+              <React.Fragment key={type.id}>
+                {typeGroups.map(group => (
+                  <label
+                    key={group.id}
+                    className='flex items-center gap-2 text-sm px-2 h-[1.5rem] rounded bg-muted'
+                  >
+                    <Checkbox
+                      checked={true}
+                      style={
+                        {
+                          '--checkbox-color': `var(${type.colorVar})`,
+                        } as React.CSSProperties
+                      }
+                      className='border-[var(--checkbox-color)] data-[state=checked]:bg-[var(--checkbox-color)] data-[state=checked]:border-[var(--checkbox-color)]'
+                      aria-label={`Toggle ${group.name} group`}
+                    />
+                    {group.name}
+                  </label>
+                ))}
+              </React.Fragment>
+            ))}
+          </div>
+          {hasOverflow && (
+            <div className='mt-1 text-sm text-muted-foreground'>
+              View all {totalGroups} groups
+            </div>
+          )}
+        </div>
+        <Button
+          variant='ghost'
+          size='sm'
+          onClick={() => setIsOpen(true)}
+          className='flex-shrink-0'
+        >
+          <Pencil className='h-4 w-4' />
+          <span className='sr-only'>Edit groups</span>
+        </Button>
+      </div>
+    );
+  };
+
+  const renderOpenView = () => (
+    <div className='space-y-3'>
+      <div className='flex items-center justify-between'>
+        <h4 className='text-sm font-medium'>Manage Groups</h4>
+        <Button
+          variant='ghost'
+          size='sm'
+          onClick={() => setIsOpen(false)}
+          className='flex-shrink-0'
+        >
+          <X className='h-4 w-4' />
+          <span className='sr-only'>Close groups editor</span>
+        </Button>
+      </div>
+      <div
+        className='space-y-3'
+        role='group'
+        aria-label={`Groups for ${user.firstname} ${user.lastname}`}
+      >
+        {groupTypes.map(type => {
+          const typeGroups = groups.filter(group => group.typeid === type.id);
+          if (typeGroups.length === 0) return null;
+
+          return (
+            <div key={type.id} className='space-y-2'>
+              <h4 className='text-xs font-medium text-muted-foreground'>
+                {type.name}
+              </h4>
+              <div className='flex flex-wrap gap-2'>
+                {typeGroups.map(group => (
+                  <label
+                    key={group.id}
+                    className='flex items-center gap-2 text-sm px-2 py-1 rounded cursor-pointer hover:bg-gray-50'
+                  >
+                    <Checkbox
+                      checked={true}
+                      style={
+                        {
+                          '--checkbox-color': `var(${type.colorVar})`,
+                        } as React.CSSProperties
+                      }
+                      className='border-[var(--checkbox-color)] data-[state=checked]:bg-[var(--checkbox-color)] data-[state=checked]:border-[var(--checkbox-color)]'
+                      aria-label={`Toggle ${group.name} group`}
+                    />
+                    {group.name}
+                  </label>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 
   return (
@@ -76,58 +217,19 @@ export function UserListItem({ user }: UserListItemProps) {
             <div role='status' aria-busy='true' aria-live='polite'>
               Loading groups...
             </div>
+          ) : groups && groups.length > 0 ? (
+            isOpen ? (
+              renderOpenView()
+            ) : (
+              renderClosedView()
+            )
           ) : (
-            <div className='space-y-3'>
-              {groups && groups.length > 0 ? (
-                <div
-                  className='space-y-3'
-                  role='group'
-                  aria-label={`Groups for ${user.firstname} ${user.lastname}`}
-                >
-                  {groupTypes.map(type => {
-                    const typeGroups = groups.filter(
-                      group => group.typeid === type.id,
-                    );
-                    if (typeGroups.length === 0) return null;
-
-                    return (
-                      <div key={type.id} className='space-y-2'>
-                        <h4 className='text-xs font-medium text-muted-foreground'>
-                          {type.name}
-                        </h4>
-                        <div className='flex flex-wrap gap-2'>
-                          {typeGroups.map(group => (
-                            <label
-                              key={group.id}
-                              className='flex items-center gap-2 text-sm px-2 py-1 rounded cursor-pointer hover:bg-gray-50'
-                            >
-                              <Checkbox
-                                checked={true}
-                                style={
-                                  {
-                                    '--checkbox-color': `var(${type.colorVar})`,
-                                  } as React.CSSProperties
-                                }
-                                className='border-[var(--checkbox-color)] data-[state=checked]:bg-[var(--checkbox-color)] data-[state=checked]:border-[var(--checkbox-color)]'
-                                aria-label={`Toggle ${group.name} group`}
-                              />
-                              {group.name}
-                            </label>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <p
-                  className='text-gray-500 text-sm'
-                  aria-label='No groups assigned'
-                >
-                  No groups
-                </p>
-              )}
-            </div>
+            <p
+              className='text-gray-500 text-sm'
+              aria-label='No groups assigned'
+            >
+              No groups
+            </p>
           )}
         </div>
       </article>
