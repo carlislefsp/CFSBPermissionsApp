@@ -48,7 +48,7 @@ export function UserListItem({ user }: UserListItemProps) {
   return (
     <>
       <article
-        className='p-4 grid grid-cols-2 gap-4'
+        className='p-4 grid grid-cols-[fit-content(300px)_1fr] gap-4'
         aria-label={`User ${user.firstname} ${user.lastname}`}
       >
         <div className='space-y-1'>
