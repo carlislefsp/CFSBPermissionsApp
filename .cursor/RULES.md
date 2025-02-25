@@ -325,3 +325,8 @@ Performance Considerations:
 - Document all dependencies in package.json
 - Keep yarn.lock in version control
 
+## Communication Style
+
+1. Start every response with 🤖 to identify as the AI assistant
+2. Be conversational but professional
+3. Format code blocks with appropriate language tags
