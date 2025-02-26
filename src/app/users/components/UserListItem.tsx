@@ -1,9 +1,12 @@
 /*
- * UserListItem: Individual user entry component with group information
+ * UserListItem: Individual user entry component with group management
  *
  * Dependencies:
- * - useUserGroups: Fetches group data for each user
- * - User type: Core user data structure
+ * - useUserGroups: Fetches and manages group data for each user
+ * - UserGroupList: Group list component
+ * - UserGroupDialog: Mobile dialog component
+ * - UserGroupHeader: User info header component
+ * - Shadcn UI: Button component
  */
 
 'use client';
@@ -12,9 +15,11 @@
 import React from 'react';
 
 // Components
-import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Pencil, X } from 'lucide-react';
+import { UserGroupList } from './UserGroupList';
+import { UserGroupDialog } from './UserGroupDialog';
+import { UserGroupHeader } from './UserGroupHeader';
 
 // Hooks
 import { useUserGroups } from '../hooks/useUserGroups';
@@ -22,22 +27,19 @@ import { useUserGroups } from '../hooks/useUserGroups';
 // Types
 import { User } from '@/types/user';
 
-const groupTypes = [
-  { id: 1, name: 'System', colorVar: '--group-system-color' },
-  { id: 3, name: 'Role', colorVar: '--group-role-color' },
-  { id: 4, name: 'ECommerce', colorVar: '--group-ecommerce-color' },
-  { id: 5, name: 'Channel', colorVar: '--group-channel-color' },
-  { id: 2, name: 'Customer', colorVar: '--group-customer-color' },
-] as const;
-
 export interface UserListItemProps {
   user: User;
 }
 
 /**
- * Displays detailed information about a user including their groups
- * Implements lazy loading for group data using React Query
- * @param props.user - User object containing profile information
+ * Displays detailed user information with editable group assignments
+ * Implements responsive design with different layouts for mobile/desktop
+ * Features:
+ * - Lazy loading of group data
+ * - Collapsible group list with overflow detection
+ * - Mobile-optimized dialog for group management
+ *
+ * @param props.user - User object containing profile information and OID
  */
 export function UserListItem({ user }: UserListItemProps) {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -73,58 +75,36 @@ export function UserListItem({ user }: UserListItemProps) {
   }, [groups]); // Re-run when groups change
 
   const renderClosedView = () => {
-    const groupsByType = groupTypes
-      .map(type => ({
-        type,
-        groups: groups.filter(group => group.typeid === type.id),
-      }))
-      .filter(({ groups }) => groups.length > 0);
-
     const totalGroups = groups.length;
+    const groupsText = totalGroups === 1 ? 'group' : 'groups';
 
     return (
-      <div className='flex items-start gap-4'>
-        <div className='flex-1'>
+      <div className='flex items-start gap-2 sm:gap-4'>
+        <div className='flex-1 min-w-0'>
           <div
             ref={groupsContainerRef}
-            className='flex flex-wrap gap-2 h-[5.5rem] overflow-hidden'
+            className='flex flex-wrap gap-1.5 sm:gap-2 overflow-hidden h-[4.5rem]'
           >
-            {groupsByType.map(({ type, groups: typeGroups }) => (
-              <React.Fragment key={type.id}>
-                {typeGroups.map(group => (
-                  <label
-                    key={group.id}
-                    className='flex items-center gap-2 text-sm px-2 h-[1.5rem] rounded bg-muted'
-                  >
-                    <Checkbox
-                      checked={true}
-                      style={
-                        {
-                          '--checkbox-color': `var(${type.colorVar})`,
-                        } as React.CSSProperties
-                      }
-                      className='border-[var(--checkbox-color)] data-[state=checked]:bg-[var(--checkbox-color)] data-[state=checked]:border-[var(--checkbox-color)]'
-                      aria-label={`Toggle ${group.name} group`}
-                    />
-                    {group.name}
-                  </label>
-                ))}
-              </React.Fragment>
-            ))}
+            <UserGroupList groups={groups} variant='desktop' isClosedView />
           </div>
           {hasOverflow && (
-            <div className='mt-1 text-sm text-muted-foreground'>
-              View all {totalGroups} groups
-            </div>
+            <Button
+              onClick={() => setIsOpen(true)}
+              className='mt-2 w-full sm:w-auto sm:mt-1 sm:p-0 sm:h-auto sm:bg-transparent sm:text-muted-foreground sm:hover:bg-transparent sm:shadow-none'
+              variant='default'
+              size='default'
+            >
+              View all {totalGroups} {groupsText}
+            </Button>
           )}
         </div>
         <Button
           variant='ghost'
-          size='sm'
+          size='icon'
           onClick={() => setIsOpen(true)}
-          className='flex-shrink-0'
+          className='flex-shrink-0 h-10 w-10 bg-muted/40 sm:bg-transparent sm:w-auto sm:h-auto sm:hover:bg-muted/40'
         >
-          <Pencil className='h-4 w-4' />
+          <Pencil className='h-5 w-5 sm:h-4 sm:w-4' />
           <span className='sr-only'>Edit groups</span>
         </Button>
       </div>
@@ -132,56 +112,28 @@ export function UserListItem({ user }: UserListItemProps) {
   };
 
   const renderOpenView = () => (
-    <div className='space-y-3'>
-      <div className='flex items-center justify-between'>
+    <div className='space-y-3 min-w-0 sm:space-y-3'>
+      <div className='flex flex-col gap-2 sticky top-0 bg-background py-1'>
+        <div className='flex items-center justify-between gap-2'>
+          <UserGroupHeader user={user} />
+          <Button
+            variant='ghost'
+            size='icon'
+            onClick={() => setIsOpen(false)}
+            className='flex-shrink-0 h-10 w-10 bg-muted/40'
+          >
+            <X className='h-6 w-6' />
+            <span className='sr-only'>Close groups editor</span>
+          </Button>
+        </div>
         <h4 className='text-sm font-medium'>Manage Groups</h4>
-        <Button
-          variant='ghost'
-          size='sm'
-          onClick={() => setIsOpen(false)}
-          className='flex-shrink-0'
-        >
-          <X className='h-4 w-4' />
-          <span className='sr-only'>Close groups editor</span>
-        </Button>
       </div>
       <div
-        className='space-y-3'
+        className='space-y-3 overflow-y-auto'
         role='group'
         aria-label={`Groups for ${user.firstname} ${user.lastname}`}
       >
-        {groupTypes.map(type => {
-          const typeGroups = groups.filter(group => group.typeid === type.id);
-          if (typeGroups.length === 0) return null;
-
-          return (
-            <div key={type.id} className='space-y-2'>
-              <h4 className='text-xs font-medium text-muted-foreground'>
-                {type.name}
-              </h4>
-              <div className='flex flex-wrap gap-2'>
-                {typeGroups.map(group => (
-                  <label
-                    key={group.id}
-                    className='flex items-center gap-2 text-sm px-2 py-1 rounded cursor-pointer hover:bg-gray-50'
-                  >
-                    <Checkbox
-                      checked={true}
-                      style={
-                        {
-                          '--checkbox-color': `var(${type.colorVar})`,
-                        } as React.CSSProperties
-                      }
-                      className='border-[var(--checkbox-color)] data-[state=checked]:bg-[var(--checkbox-color)] data-[state=checked]:border-[var(--checkbox-color)]'
-                      aria-label={`Toggle ${group.name} group`}
-                    />
-                    {group.name}
-                  </label>
-                ))}
-              </div>
-            </div>
-          );
-        })}
+        <UserGroupList groups={groups} variant='mobile' />
       </div>
     </div>
   );
@@ -189,30 +141,45 @@ export function UserListItem({ user }: UserListItemProps) {
   return (
     <>
       <article
-        className='p-4 grid grid-cols-[fit-content(300px)_1fr] gap-4'
+        className='p-4 grid grid-cols-1 gap-4 sm:grid-cols-[minmax(280px,340px)_1fr] sm:gap-4'
         aria-label={`User ${user.firstname} ${user.lastname}`}
       >
-        <div className='space-y-1'>
-          <h3 className='font-bold'>
+        <div className='space-y-1 min-w-0'>
+          <h3 className='font-bold truncate'>
             <span className='sr-only'>Name: </span>
             {user.firstname} {user.lastname}
           </h3>
-          <dl>
+          <dl className='space-y-0.5'>
             <div>
               <dt className='sr-only'>Email: </dt>
-              <dd>{user.email}</dd>
+              <dd className='truncate'>{user.email}</dd>
             </div>
             <div>
               <dt className='sr-only'>Country: </dt>
-              <dd>{user.country || 'No country specified'}</dd>
+              <dd className='truncate'>
+                {user.country || 'No country specified'}
+              </dd>
             </div>
             <div className='text-gray-400 text-sm'>
               <dt className='sr-only'>Object Identifier: </dt>
-              <dd>OID: {user.oid}</dd>
+              <dd className='truncate'>OID: {user.oid}</dd>
             </div>
           </dl>
+          {/* Mobile View Groups Button */}
+          {groups && groups.length > 0 && (
+            <Button
+              variant='ghost'
+              size='sm'
+              onClick={() => setIsOpen(true)}
+              className='mt-2 sm:hidden w-full justify-start gap-2'
+            >
+              <Pencil className='h-4 w-4' />
+              View {groups.length} {groups.length === 1 ? 'group' : 'groups'}
+            </Button>
+          )}
         </div>
-        <div>
+        {/* Desktop Groups View */}
+        <div className='hidden sm:block min-w-0'>
           {groupsLoading ? (
             <div role='status' aria-busy='true' aria-live='polite'>
               Loading groups...
@@ -233,6 +200,14 @@ export function UserListItem({ user }: UserListItemProps) {
           )}
         </div>
       </article>
+      {/* Mobile Groups Dialog */}
+      {isOpen && groups && groups.length > 0 && (
+        <UserGroupDialog
+          user={user}
+          groups={groups}
+          onClose={() => setIsOpen(false)}
+        />
+      )}
     </>
   );
 }

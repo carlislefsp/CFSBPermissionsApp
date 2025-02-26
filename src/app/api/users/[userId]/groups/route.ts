@@ -3,7 +3,7 @@ import { UserService } from '@/services/users';
 
 export async function GET(
   request: Request,
-  { params }: { params: { userId: Promise<string> } },
+  { params }: { params: { userId: string } },
 ) {
   try {
     if (
@@ -16,15 +16,14 @@ export async function GET(
       );
     }
 
-    const userId = await params.userId;
-    if (!userId) {
+    if (!params.userId) {
       return NextResponse.json(
         { error: 'User ID is required' },
         { status: 400 },
       );
     }
 
-    const groups = await UserService.getUserGroups(userId);
+    const groups = await UserService.getUserGroups(params.userId);
     return NextResponse.json(groups || []);
   } catch (error) {
     if (error instanceof Error) {
