@@ -5,13 +5,14 @@
  * - useUsers: Fetches user data with React Query
  * - useInView: Handles intersection observer for lazy loading
  * - UserListItem: Renders individual user entries
+ * - useDevice: Detects device type for conditional keyboard hints
  */
 
 'use client';
 
 // React/Next.js
 import { useInView } from 'react-intersection-observer';
-import { useMemo } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 
 // Components
 import { UserListItem, UserListItemPlaceholder } from '.';
@@ -22,6 +23,7 @@ import { Button } from '@/components/ui/button';
 
 // Hooks
 import { useUsers } from '../hooks/useUsers';
+import { useDevice } from '@/hooks/useDevice';
 
 // Types
 import { User } from '@/types/user';
@@ -78,6 +80,8 @@ export function UserList({
   onRemoveSearchTerm,
 }: UserListProps) {
   const { data: users = [], isLoading, error } = useUsers();
+  const searchRef = useRef<HTMLDivElement>(null);
+  const { isMobile, isMac } = useDevice();
 
   // Add reset handler
   const handleReset = () => {
@@ -86,6 +90,73 @@ export function UserList({
     // Remove all search terms
     searchTerms.forEach(term => onRemoveSearchTerm(term.id));
   };
+
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      console.log('Key pressed:', {
+        key: e.key,
+        altKey: e.altKey,
+        ctrlKey: e.ctrlKey,
+        metaKey: e.metaKey,
+        shiftKey: e.shiftKey,
+        target: e.target instanceof HTMLElement ? e.target.tagName : 'unknown',
+      });
+
+      // Ignore shortcuts when typing in an input
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        console.log('Ignoring shortcut - typing in input');
+        return;
+      }
+
+      // Search focus: /
+      if (
+        e.key === '/' &&
+        !e.altKey &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.shiftKey
+      ) {
+        console.log('Search focus shortcut triggered');
+        e.preventDefault();
+        searchRef.current?.querySelector('button')?.click();
+      }
+
+      // Reset: Control + R (Mac) or Alt + R (Windows)
+      if (
+        e.key.toLowerCase() === 'r' &&
+        ((navigator.platform.includes('Mac') && e.ctrlKey) ||
+          (!navigator.platform.includes('Mac') && e.altKey)) &&
+        !e.shiftKey &&
+        !e.metaKey &&
+        !(navigator.platform.includes('Mac') ? e.altKey : e.ctrlKey)
+      ) {
+        console.log('Reset shortcut triggered');
+        e.preventDefault();
+        handleReset();
+      }
+
+      // Clear selection: Escape
+      if (
+        e.key === 'Escape' &&
+        !e.altKey &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.shiftKey &&
+        selectedUser
+      ) {
+        console.log('Clear selection shortcut triggered');
+        e.preventDefault();
+        onSelectUser(undefined);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleReset, onSelectUser, selectedUser]);
 
   // Apply filters
   const filteredUsers = useMemo(() => {
@@ -166,22 +237,28 @@ export function UserList({
   return (
     <div className='space-y-4'>
       <div className='flex gap-2'>
-        <UserSearchCombobox
-          users={users}
-          onSelect={onSelectUser}
-          onFilter={onSearch}
-          currentTab={currentTab}
-          onTabChange={onTabChange}
-          allUsers={allUsers}
-        />
+        <div ref={searchRef} className='contents'>
+          <UserSearchCombobox
+            users={users}
+            onSelect={onSelectUser}
+            onFilter={onSearch}
+            showKeyboardHint={!isMobile}
+          />
+        </div>
         <Button
-          variant='secondary'
+          variant='ghost'
           onClick={handleReset}
-          className='h-10 shrink-0'
+          className='h-10 shrink-0 gap-2'
           aria-label='Reset all filters'
+          title='Reset all filters'
         >
-          <RotateCcw className='h-4 w-4 ' />
-          Reset
+          <RotateCcw className='h-4 w-4' />
+          <span>Reset</span>
+          {!isMobile && (
+            <kbd className='hidden h-5 select-none items-center rounded border bg-secondary px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex'>
+              {isMac ? '⌃R' : 'Alt+R'}
+            </kbd>
+          )}
         </Button>
       </div>
       <div className='flex flex-wrap items-center gap-2 text-sm text-muted-foreground'>
