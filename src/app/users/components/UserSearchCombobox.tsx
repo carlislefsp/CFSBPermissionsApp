@@ -9,7 +9,7 @@
 'use client';
 
 import * as React from 'react';
-import { Check, ChevronsUpDown, X } from 'lucide-react';
+import { Check, ChevronsUpDown, X, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -135,23 +135,32 @@ export function UserSearchCombobox({
 
   return (
     <div className='flex gap-2'>
-      <div className='flex-1'>
+      <div className='w-[400px] relative'>
+        {open && (
+          <div
+            className='fixed inset-0 bg-black/30 backdrop-blur-sm z-40'
+            aria-hidden='true'
+          />
+        )}
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
               variant='outline'
-              role='combobox'
+              role='button'
               aria-expanded={open}
-              className='w-full justify-between'
-              onClick={() => setOpen(true)}
+              className='w-full justify-between h-10'
             >
-              {value
-                ? selectedUser?.email ?? 'Select user...'
-                : 'Select user...'}
-              <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
+              <div className='flex items-center gap-2'>
+                <Search className='h-4 w-4' />
+                <span>Search users...</span>
+              </div>
             </Button>
           </PopoverTrigger>
-          <PopoverContent className='w-full p-0' align='start' sideOffset={4}>
+          <PopoverContent
+            className='w-[--radix-popover-trigger-width] p-0 bg-background border shadow-lg z-50'
+            align='start'
+            sideOffset={0}
+          >
             {commandComponent}
           </PopoverContent>
         </Popover>
