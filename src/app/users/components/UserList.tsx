@@ -39,17 +39,38 @@ interface UserListProps {
 export function UserList({ filterFn }: UserListProps) {
   const { data: users = [], isLoading, error } = useUsers();
   const [selectedUser, setSelectedUser] = useState<User | undefined>();
+  const [searchFilteredUsers, setSearchFilteredUsers] = useState<User[]>([]);
 
   // Apply filters
   const filteredUsers = useMemo(() => {
-    let result = filterFn ? users.filter(filterFn) : users;
+    console.log('Recalculating filteredUsers:', {
+      totalUsers: users.length,
+      searchFiltered: searchFilteredUsers.length,
+      hasFilterFn: !!filterFn,
+      hasSelectedUser: !!selectedUser,
+    });
 
+    // Start with search results if available, otherwise use all users
+    let result = searchFilteredUsers.length > 0 ? searchFilteredUsers : users;
+
+    // Then apply filterFn if provided
+    if (filterFn) {
+      result = result.filter(filterFn);
+    }
+
+    // Finally, filter by selected user if any
     if (selectedUser) {
       result = result.filter(user => user.oid === selectedUser.oid);
     }
 
+    console.log('Final filtered results:', result.length);
     return result;
-  }, [users, filterFn, selectedUser]);
+  }, [users, filterFn, selectedUser, searchFilteredUsers]);
+
+  const handleSearchFilter = (filtered: User[]) => {
+    console.log('Search filter called with:', filtered.length, 'results');
+    setSearchFilteredUsers(filtered);
+  };
 
   if (isLoading)
     return (
@@ -66,7 +87,11 @@ export function UserList({ filterFn }: UserListProps) {
 
   return (
     <div className='space-y-4'>
-      <UserSearchCombobox users={users} onSelect={setSelectedUser} />
+      <UserSearchCombobox
+        users={users}
+        onSelect={setSelectedUser}
+        onFilter={handleSearchFilter}
+      />
       <div className='flex text-sm text-muted-foreground'>
         <p>
           Showing {filteredUsers.length}{' '}

@@ -9,7 +9,7 @@
 'use client';
 
 import * as React from 'react';
-import { Check, ChevronsUpDown, X, Search } from 'lucide-react';
+import { Check, X, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -31,42 +31,92 @@ import { useDebounce } from '@/hooks/useDebounce';
 interface UserSearchComboboxProps {
   users: User[];
   onSelect: (user: User | undefined) => void;
+  onFilter: (users: User[]) => void;
+  currentTab?: 'customers' | 'employees';
+  onTabChange?: (tab: 'customers' | 'employees') => void;
+  allUsers?: {
+    customers: User[];
+    employees: User[];
+  };
 }
 
 /**
  * A searchable combobox component for selecting users
  * @param props.users - Array of users to display in the dropdown
  * @param props.onSelect - Callback fired when a user is selected
+ * @param props.onFilter - Callback fired when users are filtered
  */
 export function UserSearchCombobox({
   users,
   onSelect,
+  onFilter,
+  currentTab,
+  onTabChange,
+  allUsers,
 }: UserSearchComboboxProps) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
   const [searchQuery, setSearchQuery] = React.useState('');
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  // Memoize the selected user to avoid re-renders
-  const selectedUser = React.useMemo(
-    () => users.find(user => user.oid === value),
-    [users, value],
-  );
-
-  // Only filter users when there are 3 or more characters
-  const filteredUsers = React.useMemo(() => {
+  // Only filter users for the dropdown
+  const dropdownFilteredUsers = React.useMemo(() => {
     if (!debouncedSearchQuery || debouncedSearchQuery.length < 3) return [];
 
-    const query = debouncedSearchQuery.toLowerCase();
     return users
       .filter(
         user =>
-          user.email.toLowerCase().includes(query) ||
-          user.firstname?.toLowerCase().includes(query) ||
-          user.lastname?.toLowerCase().includes(query),
+          user.email
+            .toLowerCase()
+            .includes(debouncedSearchQuery.toLowerCase()) ||
+          user.firstname
+            ?.toLowerCase()
+            .includes(debouncedSearchQuery.toLowerCase()) ||
+          user.lastname
+            ?.toLowerCase()
+            .includes(debouncedSearchQuery.toLowerCase()),
       )
-      .slice(0, 50); // Limit to first 50 matches for performance
+      .slice(0, 50);
   }, [users, debouncedSearchQuery]);
+
+  // Search in other tab
+  const otherTabResults = React.useMemo(() => {
+    if (!debouncedSearchQuery || debouncedSearchQuery.length < 3) return [];
+    if (!allUsers || !currentTab) return [];
+
+    const otherTabUsers =
+      currentTab === 'customers' ? allUsers.employees : allUsers.customers;
+    return otherTabUsers.filter(
+      user =>
+        user.email.toLowerCase().includes(debouncedSearchQuery.toLowerCase()) ||
+        user.firstname
+          ?.toLowerCase()
+          .includes(debouncedSearchQuery.toLowerCase()) ||
+        user.lastname
+          ?.toLowerCase()
+          .includes(debouncedSearchQuery.toLowerCase()),
+    );
+  }, [debouncedSearchQuery, currentTab, allUsers]);
+
+  // Handle search submission
+  const handleSearch = React.useCallback(() => {
+    console.log('Search triggered with query:', searchQuery); // Use immediate query instead of debounced
+    if (searchQuery.length >= 3) {
+      const searchResults = users.filter(
+        user =>
+          user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          user.firstname?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          user.lastname?.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+      console.log('Found results:', searchResults.length); // Debug log
+      console.log('Calling onFilter with results'); // Debug log
+      onFilter(searchResults);
+      setOpen(false);
+    } else {
+      console.log('Query too short, showing all users'); // Debug log
+      onFilter(users);
+    }
+  }, [users, searchQuery, onFilter]); // Use searchQuery instead of debouncedSearchQuery
 
   // Batch state updates in a single callback
   const handleSelect = React.useCallback(
@@ -85,25 +135,70 @@ export function UserSearchCombobox({
     setValue('');
     setSearchQuery('');
     onSelect(undefined);
-  }, [onSelect]);
+    onFilter(users); // Reset to show all users
+    setOpen(false); // Close the popover
+  }, [onSelect, onFilter, users]);
 
   // Pre-render the Command component
   const commandComponent = React.useMemo(
     () => (
-      <Command shouldFilter={false} className='rounded-lg'>
+      <Command
+        shouldFilter={false}
+        className='rounded-lg'
+        onKeyDown={e => {
+          // Handle search on Enter
+          if (e.key === 'Enter') {
+            console.log('Enter key pressed in Command'); // Debug log
+            e.preventDefault();
+            e.stopPropagation();
+            handleSearch();
+          }
+        }}
+      >
         <CommandInput
-          placeholder='Type at least 3 characters to search...'
-          onValueChange={setSearchQuery}
+          placeholder='Type at least 3 characters and press Enter to search...'
+          onValueChange={value => {
+            console.log('Search value changed:', value); // Debug log
+            setSearchQuery(value);
+          }}
           value={searchQuery}
         />
         <CommandList>
+          {debouncedSearchQuery.length >= 3 &&
+            otherTabResults.length > 0 &&
+            currentTab &&
+            onTabChange && (
+              <CommandGroup>
+                <div className='px-2 py-1.5 text-sm text-muted-foreground flex items-center justify-between'>
+                  <span>
+                    {otherTabResults.length}{' '}
+                    {otherTabResults.length === 1 ? 'match' : 'matches'} found
+                    in {currentTab === 'customers' ? 'Employees' : 'Customers'}
+                  </span>
+                  <Button
+                    variant='link'
+                    className='h-auto p-0 text-primary'
+                    onClick={() => {
+                      onTabChange(
+                        currentTab === 'customers' ? 'employees' : 'customers',
+                      );
+                      handleSearch(); // Apply the search in the new tab
+                    }}
+                  >
+                    Switch tab →
+                  </Button>
+                </div>
+              </CommandGroup>
+            )}
           {debouncedSearchQuery.length < 3 ? (
-            <CommandEmpty>Type at least 3 characters to search...</CommandEmpty>
-          ) : filteredUsers.length === 0 ? (
+            <CommandEmpty>
+              Type at least 3 characters and press Enter to search...
+            </CommandEmpty>
+          ) : dropdownFilteredUsers.length === 0 ? (
             <CommandEmpty>No users found.</CommandEmpty>
           ) : (
             <CommandGroup>
-              {filteredUsers.map(user => (
+              {dropdownFilteredUsers.map(user => (
                 <CommandItem
                   key={user.oid}
                   value={user.email}
@@ -130,7 +225,19 @@ export function UserSearchCombobox({
         </CommandList>
       </Command>
     ),
-    [filteredUsers, handleSelect, searchQuery, value, debouncedSearchQuery],
+    [
+      dropdownFilteredUsers,
+      handleSelect,
+      searchQuery,
+      value,
+      debouncedSearchQuery,
+      otherTabResults,
+      currentTab,
+      onTabChange,
+      handleSearch,
+      users,
+      onFilter,
+    ],
   );
 
   return (
