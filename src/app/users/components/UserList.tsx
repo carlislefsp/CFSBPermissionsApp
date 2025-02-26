@@ -11,9 +11,11 @@
 
 // React/Next.js
 import { useInView } from 'react-intersection-observer';
+import { useState, useMemo } from 'react';
 
 // Components
 import { UserListItem, UserListItemPlaceholder } from '.';
+import { UserSearchCombobox } from './UserSearchCombobox';
 
 // Hooks
 import { useUsers } from '../hooks/useUsers';
@@ -36,7 +38,18 @@ interface UserListProps {
  */
 export function UserList({ filterFn }: UserListProps) {
   const { data: users = [], isLoading, error } = useUsers();
-  const filteredUsers = filterFn ? users.filter(filterFn) : users;
+  const [selectedUser, setSelectedUser] = useState<User | undefined>();
+
+  // Apply filters
+  const filteredUsers = useMemo(() => {
+    let result = filterFn ? users.filter(filterFn) : users;
+
+    if (selectedUser) {
+      result = result.filter(user => user.oid === selectedUser.oid);
+    }
+
+    return result;
+  }, [users, filterFn, selectedUser]);
 
   if (isLoading)
     return (
@@ -53,6 +66,7 @@ export function UserList({ filterFn }: UserListProps) {
 
   return (
     <div className='space-y-4'>
+      <UserSearchCombobox users={users} onSelect={setSelectedUser} />
       <div className='flex text-sm text-muted-foreground'>
         <p>
           Showing {filteredUsers.length}{' '}
