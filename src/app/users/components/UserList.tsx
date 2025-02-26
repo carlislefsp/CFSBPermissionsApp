@@ -17,7 +17,7 @@ import { useMemo } from 'react';
 import { UserListItem, UserListItemPlaceholder } from '.';
 import { UserSearchCombobox } from './UserSearchCombobox';
 import { Badge } from '@/components/ui/badge';
-import { X } from 'lucide-react';
+import { X, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 // Hooks
@@ -78,6 +78,14 @@ export function UserList({
   onRemoveSearchTerm,
 }: UserListProps) {
   const { data: users = [], isLoading, error } = useUsers();
+
+  // Add reset handler
+  const handleReset = () => {
+    onSelectUser(undefined);
+    onSearch([], '');
+    // Remove all search terms
+    searchTerms.forEach(term => onRemoveSearchTerm(term.id));
+  };
 
   // Apply filters
   const filteredUsers = useMemo(() => {
@@ -157,14 +165,25 @@ export function UserList({
 
   return (
     <div className='space-y-4'>
-      <UserSearchCombobox
-        users={users}
-        onSelect={onSelectUser}
-        onFilter={onSearch}
-        currentTab={currentTab}
-        onTabChange={onTabChange}
-        allUsers={allUsers}
-      />
+      <div className='flex gap-2'>
+        <UserSearchCombobox
+          users={users}
+          onSelect={onSelectUser}
+          onFilter={onSearch}
+          currentTab={currentTab}
+          onTabChange={onTabChange}
+          allUsers={allUsers}
+        />
+        <Button
+          variant='secondary'
+          onClick={handleReset}
+          className='h-10 shrink-0'
+          aria-label='Reset all filters'
+        >
+          <RotateCcw className='h-4 w-4 ' />
+          Reset
+        </Button>
+      </div>
       <div className='flex flex-wrap items-center gap-2 text-sm text-muted-foreground'>
         {/* Showing x users message */}
         <p className='flex-none'>
