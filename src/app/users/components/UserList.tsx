@@ -161,36 +161,19 @@ export function UserList({
         users={users}
         onSelect={onSelectUser}
         onFilter={onSearch}
+        currentTab={currentTab}
+        onTabChange={onTabChange}
+        allUsers={allUsers}
       />
-      <div className='flex flex-col gap-2'>
-        {searchTerms.length > 0 &&
-          otherTabMatches.length > 0 &&
-          currentTab &&
-          onTabChange && (
-            <div className='flex items-center justify-between rounded-md bg-muted px-4 py-2 text-sm'>
-              <span>
-                Found {otherTabMatches.length} matching{' '}
-                {otherTabMatches.length === 1 ? 'result' : 'results'} in{' '}
-                {currentTab === 'customers' ? 'Employees' : 'Customers'}
-              </span>
-              <Button
-                variant='link'
-                className='h-auto p-0'
-                onClick={() =>
-                  onTabChange(
-                    currentTab === 'customers' ? 'employees' : 'customers',
-                  )
-                }
-              >
-                Switch tab →
-              </Button>
-            </div>
-          )}
-        <div className='flex items-center gap-2 text-sm text-muted-foreground'>
-          <p>
-            Showing {filteredUsers.length}{' '}
-            {filteredUsers.length === 1 ? 'user' : 'users'}
-          </p>
+      <div className='flex flex-wrap items-center gap-2 text-sm text-muted-foreground'>
+        {/* Showing x users message */}
+        <p className='flex-none'>
+          Showing {filteredUsers.length}{' '}
+          {filteredUsers.length === 1 ? 'user' : 'users'}
+        </p>
+
+        {/* Search term badges */}
+        {searchTerms.length > 0 && (
           <div className='flex flex-wrap gap-2'>
             {searchTerms.map(term => (
               <Badge key={term.id} variant='secondary' className='gap-1.5'>
@@ -207,7 +190,68 @@ export function UserList({
               </Badge>
             ))}
           </div>
-        </div>
+        )}
+
+        {/* Selected user in other tab message */}
+        {selectedUser && currentTab && allUsers && (
+          <>
+            {currentTab === 'customers' &&
+              allUsers.employees.some(u => u.oid === selectedUser.oid) && (
+                <div className='flex items-center gap-2 rounded-md bg-muted px-3 py-1'>
+                  <span>Selected user found in Employees</span>
+                  {onTabChange && (
+                    <Button
+                      variant='link'
+                      className='h-auto p-0'
+                      onClick={() => onTabChange('employees')}
+                    >
+                      Switch tab →
+                    </Button>
+                  )}
+                </div>
+              )}
+            {currentTab === 'employees' &&
+              allUsers.customers.some(u => u.oid === selectedUser.oid) && (
+                <div className='flex items-center gap-2 rounded-md bg-muted px-3 py-1'>
+                  <span>Selected user found in Customers</span>
+                  {onTabChange && (
+                    <Button
+                      variant='link'
+                      className='h-auto p-0'
+                      onClick={() => onTabChange('customers')}
+                    >
+                      Switch tab →
+                    </Button>
+                  )}
+                </div>
+              )}
+          </>
+        )}
+
+        {/* Search results in other tab message */}
+        {searchTerms.length > 0 &&
+          otherTabMatches.length > 0 &&
+          currentTab &&
+          onTabChange && (
+            <div className='flex items-center gap-2 rounded-md bg-muted px-3 py-1'>
+              <span>
+                {otherTabMatches.length}{' '}
+                {otherTabMatches.length === 1 ? 'match' : 'matches'} in{' '}
+                {currentTab === 'customers' ? 'Employees' : 'Customers'}
+              </span>
+              <Button
+                variant='link'
+                className='h-auto p-0'
+                onClick={() =>
+                  onTabChange(
+                    currentTab === 'customers' ? 'employees' : 'customers',
+                  )
+                }
+              >
+                Switch tab →
+              </Button>
+            </div>
+          )}
       </div>
       <ul className='border rounded-lg' role='list' aria-label='User list'>
         {filteredUsers.map(user => (
