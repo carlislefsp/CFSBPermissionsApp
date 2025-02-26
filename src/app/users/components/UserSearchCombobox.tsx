@@ -165,6 +165,28 @@ export function UserSearchCombobox({
           value={searchQuery}
         />
         <CommandList>
+          {searchQuery.length > 0 && searchQuery.length < 3 && (
+            <div className='px-2 py-3 text-sm text-muted-foreground'>
+              Type at least 3 characters to search...
+            </div>
+          )}
+          {searchQuery.length >= 3 && (
+            <div className='px-2 py-3 text-sm text-muted-foreground border-b'>
+              Press{' '}
+              <kbd className='px-1.5 py-0.5 text-xs border rounded-md bg-muted'>
+                Enter
+              </kbd>{' '}
+              to add the keyboard{' '}
+              <span className='font-bold'>&ldquo;{searchQuery}&rdquo;</span>
+              to the results
+              {dropdownFilteredUsers.length > 0 && (
+                <>
+                  ,<br />
+                  or select a specific user from the results below
+                </>
+              )}
+            </div>
+          )}
           {debouncedSearchQuery.length >= 3 &&
             otherTabResults.length > 0 &&
             currentTab &&
