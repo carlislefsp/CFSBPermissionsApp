@@ -11,11 +11,14 @@
 
 // React/Next.js
 import { useInView } from 'react-intersection-observer';
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 
 // Components
 import { UserListItem, UserListItemPlaceholder } from '.';
 import { UserSearchCombobox } from './UserSearchCombobox';
+import { Badge } from '@/components/ui/badge';
+import { X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 // Hooks
 import { useUsers } from '../hooks/useUsers';
@@ -27,19 +30,54 @@ interface LazyUserListItemProps {
   user: User;
 }
 
+interface SearchTerm {
+  id: string;
+  term: string;
+}
+
 interface UserListProps {
   filterFn?: (user: User) => boolean;
+  currentTab?: 'customers' | 'employees';
+  onTabChange?: (tab: 'customers' | 'employees') => void;
+  allUsers?: {
+    customers: User[];
+    employees: User[];
+  };
+  selectedUser?: User;
+  onSelectUser: (user: User | undefined) => void;
+  searchFilteredUsers: User[];
+  searchTerms: SearchTerm[];
+  onSearch: (filtered: User[], searchTerm?: string) => void;
+  onRemoveSearchTerm: (termId: string) => void;
 }
 
 /**
  * Displays a paginated list of users with their information
  * Implements lazy loading for both list items and their associated groups
  * @param props.filterFn - Optional function to filter users
+ * @param props.currentTab - Current active tab ('customers' | 'employees')
+ * @param props.onTabChange - Callback to change the current tab
+ * @param props.allUsers - Pre-filtered users for each tab
+ * @param props.selectedUser - Currently selected user
+ * @param props.onSelectUser - Callback when user is selected
+ * @param props.searchFilteredUsers - Users filtered by search
+ * @param props.searchTerms - Active search terms
+ * @param props.onSearch - Callback when search is performed
+ * @param props.onRemoveSearchTerm - Callback to remove a search term
  */
-export function UserList({ filterFn }: UserListProps) {
+export function UserList({
+  filterFn,
+  currentTab,
+  onTabChange,
+  allUsers,
+  selectedUser,
+  onSelectUser,
+  searchFilteredUsers,
+  searchTerms,
+  onSearch,
+  onRemoveSearchTerm,
+}: UserListProps) {
   const { data: users = [], isLoading, error } = useUsers();
-  const [selectedUser, setSelectedUser] = useState<User | undefined>();
-  const [searchFilteredUsers, setSearchFilteredUsers] = useState<User[]>([]);
 
   // Apply filters
   const filteredUsers = useMemo(() => {
@@ -48,9 +86,23 @@ export function UserList({ filterFn }: UserListProps) {
       searchFiltered: searchFilteredUsers.length,
       hasFilterFn: !!filterFn,
       hasSelectedUser: !!selectedUser,
+      searchTerms,
     });
 
-    // Start with search results if available, otherwise use all users
+    // If we have search terms, apply them to the current tab's users
+    if (searchTerms.length > 0 && allUsers && currentTab) {
+      const currentTabUsers =
+        currentTab === 'customers' ? allUsers.customers : allUsers.employees;
+      return currentTabUsers.filter(user =>
+        searchTerms.every(({ term }) =>
+          [user.email, user.firstname, user.lastname].some(field =>
+            field?.toLowerCase().includes(term.toLowerCase()),
+          ),
+        ),
+      );
+    }
+
+    // Otherwise, use normal filtering logic
     let result = searchFilteredUsers.length > 0 ? searchFilteredUsers : users;
 
     // Then apply filterFn if provided
@@ -65,12 +117,30 @@ export function UserList({ filterFn }: UserListProps) {
 
     console.log('Final filtered results:', result.length);
     return result;
-  }, [users, filterFn, selectedUser, searchFilteredUsers]);
+  }, [
+    users,
+    filterFn,
+    selectedUser,
+    searchFilteredUsers,
+    searchTerms,
+    allUsers,
+    currentTab,
+  ]);
 
-  const handleSearchFilter = (filtered: User[]) => {
-    console.log('Search filter called with:', filtered.length, 'results');
-    setSearchFilteredUsers(filtered);
-  };
+  // Calculate matches in other tab when there's an active search
+  const otherTabMatches = useMemo(() => {
+    if (searchTerms.length === 0 || !currentTab || !allUsers) return [];
+
+    const otherTabUsers =
+      currentTab === 'customers' ? allUsers.employees : allUsers.customers;
+    return otherTabUsers.filter(user =>
+      searchTerms.every(({ term }) =>
+        [user.email, user.firstname, user.lastname].some(field =>
+          field?.toLowerCase().includes(term.toLowerCase()),
+        ),
+      ),
+    );
+  }, [searchTerms, currentTab, allUsers]);
 
   if (isLoading)
     return (
@@ -89,14 +159,55 @@ export function UserList({ filterFn }: UserListProps) {
     <div className='space-y-4'>
       <UserSearchCombobox
         users={users}
-        onSelect={setSelectedUser}
-        onFilter={handleSearchFilter}
+        onSelect={onSelectUser}
+        onFilter={onSearch}
       />
-      <div className='flex text-sm text-muted-foreground'>
-        <p>
-          Showing {filteredUsers.length}{' '}
-          {filteredUsers.length === 1 ? 'user' : 'users'}
-        </p>
+      <div className='flex flex-col gap-2'>
+        {searchTerms.length > 0 &&
+          otherTabMatches.length > 0 &&
+          currentTab &&
+          onTabChange && (
+            <div className='flex items-center justify-between rounded-md bg-muted px-4 py-2 text-sm'>
+              <span>
+                Found {otherTabMatches.length} matching{' '}
+                {otherTabMatches.length === 1 ? 'result' : 'results'} in{' '}
+                {currentTab === 'customers' ? 'Employees' : 'Customers'}
+              </span>
+              <Button
+                variant='link'
+                className='h-auto p-0'
+                onClick={() =>
+                  onTabChange(
+                    currentTab === 'customers' ? 'employees' : 'customers',
+                  )
+                }
+              >
+                Switch tab →
+              </Button>
+            </div>
+          )}
+        <div className='flex items-center gap-2 text-sm text-muted-foreground'>
+          <p>
+            Showing {filteredUsers.length}{' '}
+            {filteredUsers.length === 1 ? 'user' : 'users'}
+          </p>
+          <div className='flex flex-wrap gap-2'>
+            {searchTerms.map(term => (
+              <Badge key={term.id} variant='secondary' className='gap-1.5'>
+                Search: {term.term}
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  className='h-3 w-3 p-0 hover:bg-transparent'
+                  onClick={() => onRemoveSearchTerm(term.id)}
+                >
+                  <X className='h-3 w-3' />
+                  <span className='sr-only'>Remove search term</span>
+                </Button>
+              </Badge>
+            ))}
+          </div>
+        </div>
       </div>
       <ul className='border rounded-lg' role='list' aria-label='User list'>
         {filteredUsers.map(user => (

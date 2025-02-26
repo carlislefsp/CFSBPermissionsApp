@@ -31,7 +31,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 interface UserSearchComboboxProps {
   users: User[];
   onSelect: (user: User | undefined) => void;
-  onFilter: (users: User[]) => void;
+  onFilter: (users: User[], searchTerm?: string) => void;
   currentTab?: 'customers' | 'employees';
   onTabChange?: (tab: 'customers' | 'employees') => void;
   allUsers?: {
@@ -100,7 +100,8 @@ export function UserSearchCombobox({
 
   // Handle search submission
   const handleSearch = React.useCallback(() => {
-    console.log('Search triggered with query:', searchQuery); // Use immediate query instead of debounced
+    console.log('Search triggered with query:', searchQuery);
+
     if (searchQuery.length >= 3) {
       const searchResults = users.filter(
         user =>
@@ -108,15 +109,15 @@ export function UserSearchCombobox({
           user.firstname?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           user.lastname?.toLowerCase().includes(searchQuery.toLowerCase()),
       );
-      console.log('Found results:', searchResults.length); // Debug log
-      console.log('Calling onFilter with results'); // Debug log
-      onFilter(searchResults);
+      console.log('Found results:', searchResults.length);
+      console.log('Calling onFilter with results');
+      onFilter(searchResults, searchQuery);
       setOpen(false);
     } else {
-      console.log('Query too short, showing all users'); // Debug log
-      onFilter(users);
+      console.log('Query too short, showing all users');
+      onFilter(users, '');
     }
-  }, [users, searchQuery, onFilter]); // Use searchQuery instead of debouncedSearchQuery
+  }, [users, searchQuery, onFilter]);
 
   // Batch state updates in a single callback
   const handleSelect = React.useCallback(
@@ -135,8 +136,8 @@ export function UserSearchCombobox({
     setValue('');
     setSearchQuery('');
     onSelect(undefined);
-    onFilter(users); // Reset to show all users
-    setOpen(false); // Close the popover
+    onFilter(users, ''); // Reset to show all users
+    setOpen(false);
   }, [onSelect, onFilter, users]);
 
   // Pre-render the Command component
