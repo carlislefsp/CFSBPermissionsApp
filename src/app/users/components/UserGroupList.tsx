@@ -45,9 +45,12 @@ export function UserGroupList({
       return [...acc, ...typeGroups];
     }, []);
 
+    // Limit to first 10 groups in closed view
+    const displayGroups = orderedGroups.slice(0, 12);
+
     return (
       <div className='flex flex-wrap gap-1.5'>
-        {orderedGroups.map(group => {
+        {displayGroups.map(group => {
           const type = groupTypes.find(t => t.id === group.typeid);
           if (!type) return null;
 
@@ -84,8 +87,8 @@ export function UserGroupList({
         return (
           <div key={type.id} className='space-y-2'>
             <h4
-              className={`text-xs font-medium text-muted-foreground sticky ${
-                variant === 'desktop' ? 'top-[5.5rem]' : 'top-[-1rem]'
+              className={`text-xs font-medium text-muted-foreground ${
+                variant === 'desktop' ? 'static' : 'sticky top-[-1rem]'
               } bg-background -mx-4 px-4 py-1 -mt-1`}
             >
               {type.name}
