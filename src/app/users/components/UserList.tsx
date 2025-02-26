@@ -191,25 +191,39 @@ export function UserList({
           {filteredUsers.length === 1 ? 'user' : 'users'}
         </p>
 
-        {/* Search term badges */}
-        {searchTerms.length > 0 && (
-          <div className='flex flex-wrap gap-2'>
-            {searchTerms.map(term => (
-              <Badge key={term.id} variant='secondary' className='gap-1.5'>
-                Search: {term.term}
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='h-3 w-3 p-0 hover:bg-transparent'
-                  onClick={() => onRemoveSearchTerm(term.id)}
-                >
-                  <X className='h-3 w-3' />
-                  <span className='sr-only'>Remove search term</span>
-                </Button>
-              </Badge>
-            ))}
-          </div>
-        )}
+        {/* Search term and selected user badges */}
+        <div className='flex flex-wrap gap-2'>
+          {/* Selected user badge */}
+          {selectedUser && (
+            <Badge variant='secondary' className='gap-1.5'>
+              User: {selectedUser.email}
+              <Button
+                variant='ghost'
+                size='icon'
+                className='h-3 w-3 p-0 hover:bg-transparent'
+                onClick={() => onSelectUser(undefined)}
+              >
+                <X className='h-3 w-3' />
+                <span className='sr-only'>Clear selected user</span>
+              </Button>
+            </Badge>
+          )}
+          {/* Search term badges */}
+          {searchTerms.map(term => (
+            <Badge key={term.id} variant='secondary' className='gap-1.5'>
+              Search: {term.term}
+              <Button
+                variant='ghost'
+                size='icon'
+                className='h-3 w-3 p-0 hover:bg-transparent'
+                onClick={() => onRemoveSearchTerm(term.id)}
+              >
+                <X className='h-3 w-3' />
+                <span className='sr-only'>Remove search term</span>
+              </Button>
+            </Badge>
+          ))}
+        </div>
 
         {/* Selected user in other tab message */}
         {selectedUser && currentTab && allUsers && (
