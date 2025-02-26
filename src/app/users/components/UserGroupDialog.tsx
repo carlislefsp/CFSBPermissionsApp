@@ -13,7 +13,6 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 import { UserGroupList } from './UserGroupList';
-import { UserGroupHeader } from './UserGroupHeader';
 import { User } from '@/types/user';
 import { Group } from '@/types/group';
 
@@ -32,8 +31,15 @@ export function UserGroupDialog({
     <div className='fixed inset-0 z-50 sm:hidden'>
       <div className='fixed inset-4 bg-background rounded-lg shadow-lg border flex flex-col overflow-hidden'>
         <div className='sticky top-0 bg-background p-4 border-b'>
-          <div className='flex items-center justify-between gap-2 mb-2'>
-            <UserGroupHeader user={user} />
+          <div className='flex items-center justify-between gap-2'>
+            <div className='min-w-0 flex-1'>
+              <h4 className='text-sm font-medium truncate'>
+                {user.firstname} {user.lastname}
+              </h4>
+              <p className='text-xs text-muted-foreground truncate'>
+                {user.email}
+              </p>
+            </div>
             <Button
               variant='ghost'
               size='icon'
@@ -44,7 +50,6 @@ export function UserGroupDialog({
               <span className='sr-only'>Close groups editor</span>
             </Button>
           </div>
-          <h4 className='text-sm font-medium'>Manage Groups</h4>
         </div>
         <div className='flex-1 overflow-y-auto p-4'>
           <div className='space-y-4'>
