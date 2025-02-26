@@ -5,8 +5,8 @@ import { Header } from '@/components/shared/Header';
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang='en' className='h-full'>
-      <body className='h-full' suppressHydrationWarning={true}>
+    <html lang='en' suppressHydrationWarning>
+      <body className='h-full' suppressHydrationWarning>
         <Providers>
           <div className='min-h-full flex flex-col'>
             <Header />

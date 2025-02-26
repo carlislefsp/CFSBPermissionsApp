@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { ThemeToggle } from '@/components/theme/theme-toggle';
 
 export function Header() {
   return (
@@ -9,14 +10,17 @@ export function Header() {
         <Link href='/' className='text-xl font-bold'>
           User Permissions
         </Link>
-        <nav className='space-x-4'>
-          <Link href='/users' className='hover:text-gray-600'>
-            Users
-          </Link>
-          <Link href='/groups' className='hover:text-gray-600'>
-            Groups
-          </Link>
-        </nav>
+        <div className='flex items-center space-x-4'>
+          <nav className='space-x-4'>
+            <Link href='/users' className='hover:text-gray-600'>
+              Users
+            </Link>
+            <Link href='/groups' className='hover:text-gray-600'>
+              Groups
+            </Link>
+          </nav>
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
