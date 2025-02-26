@@ -19,7 +19,6 @@ import { Button } from '@/components/ui/button';
 import { Pencil, X } from 'lucide-react';
 import { UserGroupList } from './UserGroupList';
 import { UserGroupDialog } from './UserGroupDialog';
-import { UserGroupHeader } from './UserGroupHeader';
 
 // Hooks
 import { useUserGroups } from '../hooks/useUserGroups';
@@ -52,27 +51,10 @@ export function UserListItem({ user }: UserListItemProps) {
     },
   );
 
-  React.useLayoutEffect(() => {
-    if (!groupsContainerRef.current) return;
-
-    const checkOverflow = () => {
-      const container = groupsContainerRef.current;
-      if (!container) return;
-
-      setHasOverflow(container.scrollHeight > container.clientHeight);
-    };
-
-    // Check initially
-    checkOverflow();
-
-    // Set up resize observer
-    const resizeObserver = new ResizeObserver(checkOverflow);
-    resizeObserver.observe(groupsContainerRef.current);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [groups]); // Re-run when groups change
+  // Set hasOverflow based on group count instead of container dimensions
+  React.useEffect(() => {
+    setHasOverflow(groups.length > 10);
+  }, [groups]);
 
   const renderClosedView = () => {
     const totalGroups = groups.length;
@@ -83,20 +65,20 @@ export function UserListItem({ user }: UserListItemProps) {
         <div className='flex-1 min-w-0'>
           <div
             ref={groupsContainerRef}
-            className='flex flex-wrap gap-1.5 sm:gap-2 overflow-hidden h-[4.5rem]'
+            className='flex flex-wrap mb-1 gap-1.5 sm:gap-2'
           >
             <UserGroupList groups={groups} variant='desktop' isClosedView />
+            {hasOverflow && (
+              <Button
+                onClick={() => setIsOpen(true)}
+                className='bg-secondary text-secondary-foreground '
+                variant='secondary'
+                size='sm'
+              >
+                ... View all {totalGroups} {groupsText}
+              </Button>
+            )}
           </div>
-          {hasOverflow && (
-            <Button
-              onClick={() => setIsOpen(true)}
-              className='mt-2 w-full sm:w-auto sm:mt-1 sm:p-0 sm:h-auto sm:bg-transparent sm:text-muted-foreground sm:hover:bg-transparent sm:shadow-none'
-              variant='default'
-              size='default'
-            >
-              View all {totalGroups} {groupsText}
-            </Button>
-          )}
         </div>
         <Button
           variant='ghost'
@@ -112,29 +94,23 @@ export function UserListItem({ user }: UserListItemProps) {
   };
 
   const renderOpenView = () => (
-    <div className='space-y-3 min-w-0 sm:space-y-3'>
-      <div className='flex flex-col gap-2 sticky top-0 bg-background py-1'>
-        <div className='flex items-center justify-between gap-2'>
-          <UserGroupHeader user={user} />
-          <Button
-            variant='ghost'
-            size='icon'
-            onClick={() => setIsOpen(false)}
-            className='flex-shrink-0 h-10 w-10 bg-muted/40'
-          >
-            <X className='h-6 w-6' />
-            <span className='sr-only'>Close groups editor</span>
-          </Button>
-        </div>
-        <h4 className='text-sm font-medium'>Manage Groups</h4>
-      </div>
+    <div className='flex items-start gap-2 sm:gap-4'>
       <div
         className='space-y-3 overflow-y-auto'
         role='group'
         aria-label={`Groups for ${user.firstname} ${user.lastname}`}
       >
-        <UserGroupList groups={groups} variant='mobile' />
+        <UserGroupList groups={groups} variant='desktop' />
       </div>
+      <Button
+        variant='ghost'
+        size='icon'
+        onClick={() => setIsOpen(false)}
+        className='flex-shrink-0 h-10 w-10 bg-muted/40'
+      >
+        <X className='h-6 w-6' />
+        <span className='sr-only'>Close groups editor</span>
+      </Button>
     </div>
   );
 
@@ -161,14 +137,14 @@ export function UserListItem({ user }: UserListItemProps) {
               </dd>
             </div>
             <div className='text-gray-400 text-sm'>
-              <dt className='sr-only'>Object Identifier: </dt>
-              <dd className='truncate'>OID: {user.oid}</dd>
+              <dt className='sr-only'>User Object Identifier: </dt>
+              <dd className='truncate'> {user.oid}</dd>
             </div>
           </dl>
           {/* Mobile View Groups Button */}
           {groups && groups.length > 0 && (
             <Button
-              variant='ghost'
+              variant='secondary'
               size='sm'
               onClick={() => setIsOpen(true)}
               className='mt-2 sm:hidden w-full justify-start gap-2'
