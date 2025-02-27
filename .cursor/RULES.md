@@ -124,23 +124,57 @@ You are an expert full-stack developer proficient in TypeScript, React, Next.js,
 
 ```
 src/
-├── app/
-│   ├── users/              # User section
-│   │   ├── components/     # User-specific components
-│   │   ├── hooks/         # User-specific hooks
-│   │   └── types/         # User-specific types
-│   └── groups/            # Group section
-│       ├── components/    # Group-specific components
-│       └── hooks/        # Group-specific hooks
-├── components/           # Shared components only
-├── hooks/               # Shared hooks
-└── types/              # Shared types
+├── app/              # Next.js app directory
+│   ├── users/        # User section
+│   │   ├── components/  # User-specific components
+│   │   ├── hooks/      # User-specific hooks
+│   │   └── types/      # User-specific types
+│   └── groups/      # Group section
+│       ├── components/ # Group-specific components
+│       └── hooks/     # Group-specific hooks
+├── components/      # Shared components only
+├── hooks/          # Shared hooks
+├── types/          # Shared types
+├── lib/           # Library setups and core utilities
+│   ├── react-query.ts  # React Query setup
+│   └── utils.ts       # General utilities
+├── services/      # API and data services
+│   ├── api.ts    # Base API configuration
+│   └── [feature].ts  # Feature-specific API services
+└── config/       # Application configuration
+    └── domains.ts  # Domain and environment configs
 ```
+
+### Service Layer
+
+- Keep API-related logic in `services/` directory
+- Each feature should have its own service file
+- Use TypeScript for full type safety in API calls
+- Implement proper error handling and response typing
+- Follow RESTful principles for API endpoint organization
+- Centralize API configuration and interceptors in `api.ts`
+
+### Configuration Management
+
+- Store configuration in `config/` directory
+- Use environment variables for sensitive data
+- Keep domain-specific configuration separate
+- Export constants and configuration objects
+- Use TypeScript enums or as const assertions for configuration values
+- Document all configuration options and their purposes
+
+### Library Setup
+
+- Keep library initialization in `lib/` directory
+- Configure third-party libraries (e.g., React Query)
+- Store reusable utility functions
+- Keep setup logic separate from business logic
+- Document any library-specific configuration
+- Implement type-safe utility functions
 
 ### Type Definition Strategy
 
 1. **Shared Types** (`/src/types/`)
-
    - Core business interfaces (User, Group, Permission)
    - Shared utility types
    - API response types
@@ -151,8 +185,6 @@ src/
    - Component-specific unions/types
    - Local state types
    - Event handler types
-
-
 
 ### File Naming
 
