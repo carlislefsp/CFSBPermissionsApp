@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
 import { UserService } from '@/services/users';
 
-export async function GET(
-  request: Request,
-  { params }: { params: { userId: string } },
-) {
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: Request) {
   try {
     if (
       !process.env.PERMISSION_API_BASE_URL ||
@@ -16,14 +15,15 @@ export async function GET(
       );
     }
 
-    if (!params.userId) {
+    const userId = request.url.split('/users/')[1]?.split('/')[0];
+    if (!userId) {
       return NextResponse.json(
         { error: 'User ID is required' },
         { status: 400 },
       );
     }
 
-    const groups = await UserService.getUserGroups(params.userId);
+    const groups = await UserService.getUserGroups(userId);
     return NextResponse.json(groups || []);
   } catch (error) {
     if (error instanceof Error) {

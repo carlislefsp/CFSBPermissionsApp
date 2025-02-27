@@ -1,6 +1,3 @@
-import { User } from '../user';
-import { Group } from '../group';
-
 /**
  * Base pagination parameters for list requests
  */

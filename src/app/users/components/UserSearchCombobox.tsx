@@ -253,11 +253,9 @@ export function UserSearchCombobox({
       searchQuery,
       value,
       debouncedSearchQuery,
-      handleSearch,
-      users,
-      onFilter,
       activeIndex,
       handleKeyDown,
+      handleSearch,
     ],
   );
 

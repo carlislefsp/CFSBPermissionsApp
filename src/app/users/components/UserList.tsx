@@ -12,7 +12,7 @@
 
 // React/Next.js
 import { useInView } from 'react-intersection-observer';
-import { useMemo, useEffect, useRef } from 'react';
+import { useMemo, useEffect, useRef, useCallback } from 'react';
 
 // Components
 import { UserListItem, UserListItemPlaceholder } from '.';
@@ -26,7 +26,7 @@ import { useUsers } from '../hooks/useUsers';
 import { useDevice } from '@/hooks/useDevice';
 
 // Types
-import { LazyUserListItemProps, UserListProps, SearchTerm } from '../types';
+import { LazyUserListItemProps, UserListProps } from '../types';
 
 /**
  * Displays a paginated list of users with their information
@@ -59,12 +59,12 @@ export function UserList({
   const { isMobile, isMac } = useDevice();
 
   // Add reset handler
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     onSelectUser(undefined);
     onSearch([], '');
     // Remove all search terms
     searchTerms.forEach(term => onRemoveSearchTerm(term.id));
-  };
+  }, [onSelectUser, onSearch, searchTerms, onRemoveSearchTerm]);
 
   // Handle keyboard shortcuts
   useEffect(() => {
