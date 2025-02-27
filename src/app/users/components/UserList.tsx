@@ -29,18 +29,44 @@ import { useDevice } from '@/hooks/useDevice';
 import { LazyUserListItemProps, UserListProps } from '../types';
 
 /**
- * Displays a paginated list of users with their information
- * Implements lazy loading for both list items and their associated groups
- * @param props.filterFn - Optional function to filter users
+ * Main component for displaying and managing the list of users with search, filtering, and lazy loading
+ *
+ * Features:
+ * - Virtualized lazy loading of user items
+ * - Search functionality with multi-term support
+ * - Tab-based filtering between customers and employees
+ * - Keyboard shortcuts for common actions
+ * - Responsive design with mobile considerations
+ *
+ * Keyboard Shortcuts:
+ * - '/' : Focus search
+ * - 'Esc' : Clear selection
+ * - 'Ctrl+R' (Mac) or 'Alt+R' (Windows) : Reset all filters
+ *
+ * @param props.filterFn - Optional function to filter users beyond search/tab filters
  * @param props.currentTab - Current active tab ('customers' | 'employees')
- * @param props.onTabChange - Callback to change the current tab
- * @param props.allUsers - Pre-filtered users for each tab
- * @param props.selectedUser - Currently selected user
- * @param props.onSelectUser - Callback when user is selected
- * @param props.searchFilteredUsers - Users filtered by search
- * @param props.searchTerms - Active search terms
+ * @param props.onTabChange - Callback when switching between customer/employee tabs
+ * @param props.allUsers - Pre-filtered users separated by customer/employee status
+ * @param props.selectedUser - Currently selected user for detailed view
+ * @param props.onSelectUser - Callback when user selection changes
+ * @param props.searchFilteredUsers - Users filtered by current search terms
+ * @param props.searchTerms - Array of active search terms with their IDs
  * @param props.onSearch - Callback when search is performed
- * @param props.onRemoveSearchTerm - Callback to remove a search term
+ * @param props.onRemoveSearchTerm - Callback to remove a specific search term
+ *
+ * @example
+ * ```tsx
+ * <UserList
+ *   currentTab="customers"
+ *   onTabChange={(tab) => setCurrentTab(tab)}
+ *   allUsers={{ customers: [], employees: [] }}
+ *   selectedUser={selectedUser}
+ *   onSelectUser={(user) => setSelectedUser(user)}
+ *   searchTerms={[]}
+ *   onSearch={(users, term) => handleSearch(users, term)}
+ *   onRemoveSearchTerm={(id) => removeSearchTerm(id)}
+ * />
+ * ```
  */
 export function UserList({
   filterFn,
@@ -348,9 +374,25 @@ export function UserList({
 }
 
 /**
- * Wrapper component that implements lazy loading for user list items
- * Only renders the full item when it comes into view
- * @param props.user - User object containing profile information
+ * Component that implements lazy loading for individual user list items
+ * Only renders the full UserListItem component when the element enters the viewport
+ *
+ * Features:
+ * - Uses Intersection Observer for viewport detection
+ * - Shows placeholder while loading
+ * - Triggers load once with 10% visibility threshold
+ *
+ * @param props.user - User object containing profile and permission information
+ *
+ * @example
+ * ```tsx
+ * <LazyUserListItem user={{
+ *   oid: '123',
+ *   email: 'user@example.com',
+ *   firstname: 'John',
+ *   lastname: 'Doe'
+ * }} />
+ * ```
  */
 function LazyUserListItem({ user }: LazyUserListItemProps) {
   const { ref, inView } = useInView({

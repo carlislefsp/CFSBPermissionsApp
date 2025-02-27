@@ -36,11 +36,36 @@ interface UserSearchComboboxProps {
 }
 
 /**
- * A searchable combobox component for selecting users
- * @param props.users - Array of users to display in the dropdown
- * @param props.onSelect - Callback fired when a user is selected
- * @param props.onFilter - Callback fired when users are filtered
- * @param props.showKeyboardHint - Whether to show the keyboard shortcut hint
+ * Advanced searchable combobox for user selection with keyboard navigation
+ *
+ * Features:
+ * - Real-time search filtering
+ * - Keyboard navigation support
+ * - Mobile-responsive design
+ * - Optional keyboard shortcut hints
+ * - Clear selection capability
+ * - Empty state handling
+ *
+ * Keyboard Support:
+ * - '/' : Focus search (when enabled)
+ * - 'Arrow Up/Down' : Navigate options
+ * - 'Enter' : Select option
+ * - 'Esc' : Close dropdown
+ *
+ * @param props.users - Array of all available users to search through
+ * @param props.onSelect - Callback when a user is selected from the dropdown
+ * @param props.onFilter - Callback with filtered users and current search term
+ * @param props.showKeyboardHint - Whether to show keyboard shortcut hint (default: true)
+ *
+ * @example
+ * ```tsx
+ * <UserSearchCombobox
+ *   users={users}
+ *   onSelect={(user) => setSelectedUser(user)}
+ *   onFilter={(filtered, term) => handleFilteredResults(filtered, term)}
+ *   showKeyboardHint={!isMobile}
+ * />
+ * ```
  */
 export function UserSearchCombobox({
   users,
