@@ -62,6 +62,23 @@ export class UserService extends ApiService {
   }
 
   static async getAllUserGroups(): Promise<Record<string, Group[]>> {
-    return this.fetch<Record<string, Group[]>>('/user-groups');
+    // First get all users
+    const users = await this.getUsers();
+
+    // Then fetch groups for each user in parallel
+    const userGroups = await Promise.all(
+      users.map(async user => {
+        try {
+          const groups = await this.getUserGroups(user.oid);
+          return [user.oid, groups] as const;
+        } catch (error) {
+          console.error(`Failed to fetch groups for user ${user.oid}:`, error);
+          return [user.oid, []] as const;
+        }
+      }),
+    );
+
+    // Convert the array of [oid, groups] pairs into a Record
+    return Object.fromEntries(userGroups);
   }
 }

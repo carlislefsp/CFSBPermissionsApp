@@ -22,12 +22,13 @@ Last Updated: [Date]
 -->
 
 ## Business Rules System Implementation
-Last Updated: [Current Date]
+Last Updated: February 27, 2024
 
 ### PR Summary
 - Key Changes:
   - Implemented type-safe business rule validation system
   - Created rule engine with caching and batch validation
+  - Fixed user-groups API endpoint to use correct API paths
   - Implemented six core business rules:
     1. Employee domain validation
     2. ECommerce group membership
@@ -45,6 +46,7 @@ Last Updated: [Current Date]
   - Using existing domain configuration
   - Separated each rule into its own file for maintainability
   - Added type-safe group validator builder pattern
+  - Refactored UserService to use documented API endpoints correctly
 
 - Performance Considerations:
   - Cache implementation with 5-minute timeout
@@ -52,6 +54,7 @@ Last Updated: [Current Date]
   - Optimized group membership checks
   - Minimal recomputation through useMemo
   - Early returns in rules when conditions don't apply
+  - Parallel fetching of user groups using Promise.all
 
 - Testing Notes:
   - Need unit tests for:
@@ -70,6 +73,10 @@ Last Updated: [Current Date]
   - Created type-safe group checking utilities
   - Centralized group type definitions
   - Reusable validation patterns
+  - Fixed user groups fetching to use correct API endpoints:
+    - Now uses /users and /users/{useroid}/groups endpoints
+    - Handles errors gracefully per user
+    - Maintains backward compatibility with existing interfaces
 
 - Rule Engine:
   - Caching based on user ID, email, and group membership

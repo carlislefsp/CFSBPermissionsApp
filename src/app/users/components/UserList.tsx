@@ -25,9 +25,11 @@ import { Button } from '@/components/ui/button';
 import { useUsers } from '../hooks/useUsers';
 import { useDevice } from '@/hooks/useDevice';
 import { useUserValidation } from '../hooks/useUserValidation';
+import { useUserGroupsMapping } from '../hooks/useUserGroupsMapping';
 
 // Types
 import { LazyUserListItemProps, UserListProps } from '../types';
+import { User } from '@/types/user';
 
 /**
  * Main component for displaying and managing the list of users with search, filtering, and lazy loading
@@ -82,6 +84,7 @@ export function UserList({
   onRemoveSearchTerm,
 }: UserListProps) {
   const { data: users = [], isLoading, error } = useUsers();
+  const { data: groupsMapping = {} } = useUserGroupsMapping();
   const searchRef = useRef<HTMLDivElement>(null);
   const { isMobile, isMac } = useDevice();
 
@@ -89,10 +92,10 @@ export function UserList({
   const userGroups = useMemo(() => {
     const groupMap = new Map();
     users.forEach(user => {
-      groupMap.set(user.oid, user.groups || []);
+      groupMap.set(user.oid, groupsMapping[user.oid] || []);
     });
     return groupMap;
-  }, [users]);
+  }, [users, groupsMapping]);
 
   // Get violations for all users
   const violations = useUserValidation(users, userGroups);

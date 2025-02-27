@@ -14,11 +14,19 @@ export function useUserGroups(
   return useQuery<Group[]>({
     queryKey: ['userGroups', userId],
     queryFn: async () => {
+      console.log('Fetching groups for user:', userId);
       const response = await fetch(`/api/users/${userId}/groups`);
       if (!response.ok) {
+        console.error(
+          'Failed to fetch groups:',
+          response.status,
+          response.statusText,
+        );
         throw new Error('Failed to fetch user groups');
       }
-      return response.json();
+      const groups = await response.json();
+      console.log('Received groups:', groups);
+      return groups;
     },
     enabled: options.enabled && !!userId,
     staleTime: 1000 * 60 * 30, // Data considered fresh for 30 minutes
