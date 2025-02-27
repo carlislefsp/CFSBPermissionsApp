@@ -1,5 +1,6 @@
 import { Group } from '@/types/group';
 import { GROUP_IDS, GROUP_TYPES } from '@/config/groups';
+import { EMPLOYEE_DOMAINS } from '@/config/domains';
 
 export const groupUtils = {
   /**
@@ -45,16 +46,16 @@ export const groupUtils = {
   },
 
   /**
-   * Check if email domain matches any in the allowed list
+   * Check if email belongs to an employee domain
    */
-  isAllowedDomain: (email: string, allowedDomains: string[]): boolean => {
-    const domain = email.split('@')[1];
-    return allowedDomains.includes(domain);
+  isEmployeeDomain: (email: string): boolean => {
+    const domain = email.split('@')[1]?.toLowerCase();
+    return domain ? EMPLOYEE_DOMAINS.includes(domain) : false;
   },
 };
 
 /**
- * Type-safe group validation builder
+ * Type-safe group validator builder
  */
 export const createGroupValidator = (groups: Group[]) => ({
   isEmployee: () => groupUtils.isInGroup(groups, GROUP_IDS.ECOMMERCE.EMPLOYEE),
