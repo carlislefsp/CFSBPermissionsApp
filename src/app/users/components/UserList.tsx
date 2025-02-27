@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button';
 // Hooks
 import { useUsers } from '../hooks/useUsers';
 import { useDevice } from '@/hooks/useDevice';
+import { useUserValidation } from '../hooks/useUserValidation';
 
 // Types
 import { LazyUserListItemProps, UserListProps } from '../types';
@@ -83,6 +84,18 @@ export function UserList({
   const { data: users = [], isLoading, error } = useUsers();
   const searchRef = useRef<HTMLDivElement>(null);
   const { isMobile, isMac } = useDevice();
+
+  // Get user groups for validation
+  const userGroups = useMemo(() => {
+    const groupMap = new Map();
+    users.forEach(user => {
+      groupMap.set(user.oid, user.groups || []);
+    });
+    return groupMap;
+  }, [users]);
+
+  // Get violations for all users
+  const violations = useUserValidation(users, userGroups);
 
   // Add reset handler
   const handleReset = useCallback(() => {
@@ -364,9 +377,17 @@ export function UserList({
             </div>
           )}
       </div>
-      <ul className='border rounded-lg' role='list' aria-label='User list'>
+      <ul
+        className='space-y-2 border rounded-lg divide-y'
+        role='list'
+        aria-label='User list'
+      >
         {filteredUsers.map(user => (
-          <LazyUserListItem key={user.oid} user={user} />
+          <LazyUserListItem
+            key={user.oid}
+            user={user}
+            violations={violations.get(user.oid)?.violations || []}
+          />
         ))}
       </ul>
     </div>
@@ -394,7 +415,7 @@ export function UserList({
  * }} />
  * ```
  */
-function LazyUserListItem({ user }: LazyUserListItemProps) {
+function LazyUserListItem({ user, violations }: LazyUserListItemProps) {
   const { ref, inView } = useInView({
     triggerOnce: true,
     threshold: 0.1,
@@ -402,7 +423,11 @@ function LazyUserListItem({ user }: LazyUserListItemProps) {
 
   return (
     <li ref={ref} className='border-b last:border-b-0' role='listitem'>
-      {inView ? <UserListItem user={user} /> : <UserListItemPlaceholder />}
+      {inView ? (
+        <UserListItem user={user} violations={violations} />
+      ) : (
+        <UserListItemPlaceholder />
+      )}
     </li>
   );
 }

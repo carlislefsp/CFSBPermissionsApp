@@ -10,8 +10,12 @@
 'use client';
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { UserGroupList } from './UserGroupList';
 import { User } from '@/types/user';
 import { Group } from '@/types/group';
@@ -19,6 +23,11 @@ import { Group } from '@/types/group';
 interface UserGroupDialogProps {
   user: User;
   groups: Group[];
+  violations?: {
+    ruleId: string;
+    ruleName: string;
+    message: string;
+  }[];
   onClose: () => void;
 }
 
@@ -40,6 +49,7 @@ interface UserGroupDialogProps {
  *
  * @param props.user - User whose groups are being managed
  * @param props.groups - Array of groups assigned to the user
+ * @param props.violations - Array of rule violations
  * @param props.onClose - Callback when dialog is closed
  *
  * @example
@@ -52,6 +62,7 @@ interface UserGroupDialogProps {
  *     lastname: 'Doe'
  *   }}
  *   groups={userGroups}
+ *   violations={violations}
  *   onClose={() => setDialogOpen(false)}
  * />
  * ```
@@ -60,39 +71,45 @@ interface UserGroupDialogProps {
 export function UserGroupDialog({
   user,
   groups,
+  violations = [],
   onClose,
 }: UserGroupDialogProps) {
   return (
-    <div className='fixed inset-0 z-50 sm:hidden'>
-      <div className='fixed inset-4 bg-background rounded-lg shadow-lg border flex flex-col overflow-hidden'>
-        <div className='sticky top-0 bg-background p-4 border-b'>
-          <div className='flex items-center justify-between gap-2'>
-            <div className='min-w-0 flex-1'>
-              <h4 className='text-sm font-medium truncate'>
-                {user.firstname} {user.lastname}
-              </h4>
-              <p className='text-xs text-muted-foreground truncate'>
-                {user.email}
-              </p>
-            </div>
-            <Button
-              variant='ghost'
-              size='icon'
-              onClick={onClose}
-              className='flex-shrink-0 h-10 w-10 bg-muted/40'
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
+            Groups for {user.firstname} {user.lastname}
+          </DialogTitle>
+        </DialogHeader>
+        <div className='space-y-4'>
+          {/* Rule Violations Banner */}
+          {violations.length > 0 && (
+            <div
+              className='bg-red-50 border border-red-200 rounded-md p-3 space-y-2'
+              role='alert'
             >
-              <X className='h-6 w-6' />
-              <span className='sr-only'>Close groups editor</span>
-            </Button>
-          </div>
-        </div>
-        <div className='flex-1 overflow-y-auto p-4'>
-          <div className='space-y-4'>
+              <div className='flex items-center gap-2 text-red-700 font-medium'>
+                <div className='rounded-full bg-red-600 text-white p-0.5 w-5 h-5 flex items-center justify-center'>
+                  <span className='font-bold text-sm'>!</span>
+                </div>
+                <span>Problem Found:</span>
+              </div>
+              <ul className='space-y-1 text-sm text-red-600 list-disc pl-5'>
+                {violations.map(violation => (
+                  <li key={violation.ruleId}>
+                    <strong>{violation.ruleName}:</strong> {violation.message}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {/* Groups List */}
+          <div className='space-y-3'>
             <UserGroupList groups={groups} variant='mobile' />
           </div>
         </div>
-      </div>
-      <div className='fixed inset-0 -z-10 bg-background/80 backdrop-blur-sm' />
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
