@@ -338,3 +338,34 @@ export function UserTable({ ... })
 1. Start every response with 🤖 to identify as the AI assistant
 2. Be conversational but professional
 3. Format code blocks with appropriate language tags
+
+## Pull Request Documentation
+
+### PR Summary File
+Maintain PR summaries in PR_SUMMARY.md using this structure:
+```markdown
+# Active Pull Request Summaries
+
+## [Branch/Feature Name]
+Last Updated: [Date]
+
+### PR Summary
+- Key Changes:
+- Technical Decisions:
+- Performance Considerations:
+- Testing Notes:
+
+### Implementation Details
+```
+
+### Process
+1. Start tracking changes by saying "Let's track changes for a PR description for [branch/feature name]"
+
+2. Commands supported:
+   - "Show PR summary for [branch/feature]" - Display current summary
+   - "Add to PR summary for [branch/feature]" - Add new items
+   - "Update PR summary for [branch/feature]" - Modify existing items
+   - "Generate PR description for [branch/feature]" - Create final PR description
+   - "Remove PR summary for [branch/feature]" - Delete completed PR summary
+
+3. The PR_SUMMARY.md file will persist between sessions to maintain a history of changes.
