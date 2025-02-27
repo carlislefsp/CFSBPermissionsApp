@@ -26,32 +26,7 @@ import { useUsers } from '../hooks/useUsers';
 import { useDevice } from '@/hooks/useDevice';
 
 // Types
-import { User } from '@/types/user';
-
-interface LazyUserListItemProps {
-  user: User;
-}
-
-interface SearchTerm {
-  id: string;
-  term: string;
-}
-
-interface UserListProps {
-  filterFn?: (user: User) => boolean;
-  currentTab?: 'customers' | 'employees';
-  onTabChange?: (tab: 'customers' | 'employees') => void;
-  allUsers?: {
-    customers: User[];
-    employees: User[];
-  };
-  selectedUser?: User;
-  onSelectUser: (user: User | undefined) => void;
-  searchFilteredUsers: User[];
-  searchTerms: SearchTerm[];
-  onSearch: (filtered: User[], searchTerm?: string) => void;
-  onRemoveSearchTerm: (termId: string) => void;
-}
+import { LazyUserListItemProps, UserListProps, SearchTerm } from '../types';
 
 /**
  * Displays a paginated list of users with their information
