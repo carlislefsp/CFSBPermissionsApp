@@ -22,6 +22,41 @@ interface UserGroupDialogProps {
   onClose: () => void;
 }
 
+/**
+ * Mobile-optimized dialog component for managing user group assignments
+ *
+ * Features:
+ * - Full-screen mobile dialog experience
+ * - Accessible dialog implementation
+ * - Group management interface
+ * - Smooth animations and transitions
+ * - Touch-friendly controls
+ *
+ * Accessibility:
+ * - Proper ARIA roles and labels
+ * - Focus management
+ * - Keyboard navigation support
+ * - Screen reader announcements
+ *
+ * @param props.user - User whose groups are being managed
+ * @param props.groups - Array of groups assigned to the user
+ * @param props.onClose - Callback when dialog is closed
+ *
+ * @example
+ * ```tsx
+ * <UserGroupDialog
+ *   user={{
+ *     oid: '123',
+ *     email: 'user@example.com',
+ *     firstname: 'John',
+ *     lastname: 'Doe'
+ *   }}
+ *   groups={userGroups}
+ *   onClose={() => setDialogOpen(false)}
+ * />
+ * ```
+ */
+
 export function UserGroupDialog({
   user,
   groups,

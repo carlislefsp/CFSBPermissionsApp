@@ -28,10 +28,39 @@ interface UserGroupListProps {
 }
 
 /**
- * Renders a list of user groups organized by type with responsive layout
- * @param props.groups - Array of groups assigned to the user
- * @param props.variant - Display variant ('mobile' | 'desktop') controlling layout and styling
- * @param props.isClosedView - Whether this is the closed view on desktop (shows inline groups)
+ * Displays a categorized and responsive list of user groups with visual indicators
+ *
+ * Features:
+ * - Categorized group display by type (System, Role, ECommerce, Channel)
+ * - Color-coded visual indicators for each group type
+ * - Responsive layout with mobile and desktop variants
+ * - Collapsible view for space efficiency
+ * - Accessible group management interface
+ *
+ * Display Modes:
+ * - Desktop: Horizontal layout with optional collapse
+ * - Mobile: Vertical scrollable list with full details
+ * - Closed View: Compact representation for space efficiency
+ *
+ * @param props.groups - Array of groups to display
+ * @param props.variant - Layout variant ('mobile' | 'desktop')
+ * @param props.isClosedView - Whether to show the compact view (desktop only)
+ *
+ * @example
+ * ```tsx
+ * // Desktop expanded view
+ * <UserGroupList
+ *   groups={userGroups}
+ *   variant="desktop"
+ *   isClosedView={false}
+ * />
+ *
+ * // Mobile view
+ * <UserGroupList
+ *   groups={userGroups}
+ *   variant="mobile"
+ * />
+ * ```
  */
 export function UserGroupList({
   groups,

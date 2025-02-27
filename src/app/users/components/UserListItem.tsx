@@ -31,14 +31,38 @@ export interface UserListItemProps {
 }
 
 /**
- * Displays detailed user information with editable group assignments
- * Implements responsive design with different layouts for mobile/desktop
- * Features:
- * - Lazy loading of group data
- * - Collapsible group list with overflow detection
- * - Mobile-optimized dialog for group management
+ * Renders an individual user entry with their associated groups and management controls
  *
- * @param props.user - User object containing profile information and OID
+ * Features:
+ * - Displays user profile information
+ * - Shows associated groups with management capabilities
+ * - Responsive design with mobile-optimized dialog
+ * - Edit and remove group functionality
+ * - Loading states and error handling
+ *
+ * States:
+ * - Loading: Shows skeleton placeholder
+ * - Error: Displays error message with retry option
+ * - Empty: Shows no groups message with add option
+ * - Populated: Lists all user groups with management controls
+ *
+ * @param props.user - User object containing profile and permission data
+ * @param props.isSelected - Whether this user is currently selected
+ * @param props.onSelect - Optional callback when user is selected
+ *
+ * @example
+ * ```tsx
+ * <UserListItem
+ *   user={{
+ *     oid: '123',
+ *     email: 'user@example.com',
+ *     firstname: 'John',
+ *     lastname: 'Doe'
+ *   }}
+ *   isSelected={false}
+ *   onSelect={(user) => handleUserSelect(user)}
+ * />
+ * ```
  */
 export function UserListItem({ user }: UserListItemProps) {
   const [isOpen, setIsOpen] = React.useState(false);
