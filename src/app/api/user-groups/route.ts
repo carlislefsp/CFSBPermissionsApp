@@ -3,6 +3,11 @@ import { UserService } from '@/services/users';
 
 export async function GET() {
   try {
+    console.log('API Config:', {
+      baseUrl: process.env.PERMISSION_API_BASE_URL,
+      hasApiCode: !!process.env.PERMISSION_API_CODE,
+    });
+
     if (
       !process.env.PERMISSION_API_BASE_URL ||
       !process.env.PERMISSION_API_CODE
@@ -13,9 +18,12 @@ export async function GET() {
       );
     }
 
+    console.log('Fetching all user groups...');
     const userGroups = await UserService.getAllUserGroups();
+    console.log('Successfully fetched user groups');
     return NextResponse.json(userGroups || {});
   } catch (error) {
+    console.error('Error in user-groups API route:', error);
     if (error instanceof Error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
