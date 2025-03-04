@@ -23,6 +23,9 @@ import { UserGroupDialog } from './UserGroupDialog';
 // Hooks
 import { useUserGroups } from '../hooks/useUserGroups';
 
+// Rules
+import { createRuleEngine } from '@/lib/rule-engine';
+
 // Types
 import { User } from '@/types/user';
 
@@ -69,7 +72,7 @@ export interface UserListItemProps {
  * />
  * ```
  */
-export function UserListItem({ user, violations }: UserListItemProps) {
+export function UserListItem({ user }: { user: User }) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [hasOverflow, setHasOverflow] = React.useState(false);
   const groupsContainerRef = React.useRef<HTMLDivElement>(null);
@@ -79,6 +82,14 @@ export function UserListItem({ user, violations }: UserListItemProps) {
       enabled: true,
     },
   );
+
+  // Create rule engine instance
+  const ruleEngine = React.useMemo(() => createRuleEngine(), []);
+
+  // Validate user when groups are loaded
+  const validation = React.useMemo(() => {
+    return ruleEngine.validateUser(user, groups);
+  }, [groups, user, ruleEngine]);
 
   // Set hasOverflow based on group count instead of container dimensions
   React.useEffect(() => {
@@ -185,7 +196,7 @@ export function UserListItem({ user, violations }: UserListItemProps) {
       {/* Desktop Groups View */}
       <div className='hidden sm:block min-w-0 space-y-3'>
         {/* Rule Violations Banner */}
-        {violations.length > 0 && (
+        {validation.violations.length > 0 && (
           <div
             className='bg-red-50 border border-red-200 rounded-md p-3 space-y-2'
             role='alert'
@@ -196,8 +207,9 @@ export function UserListItem({ user, violations }: UserListItemProps) {
               </div>
               <span>Problem Found:</span>
             </div>
+            <div className='text-xs text-red-500'>User OID: {user.oid}</div>
             <ul className='space-y-1 text-sm text-red-600 list-disc pl-5'>
-              {violations.map(violation => (
+              {validation.violations.map(violation => (
                 <li key={violation.ruleId}>
                   <strong>{violation.ruleName}:</strong> {violation.message}
                 </li>
@@ -205,6 +217,7 @@ export function UserListItem({ user, violations }: UserListItemProps) {
             </ul>
           </div>
         )}
+
         {/* Groups List */}
         {groupsLoading ? (
           <div role='status' aria-busy='true' aria-live='polite'>
@@ -227,7 +240,7 @@ export function UserListItem({ user, violations }: UserListItemProps) {
         <UserGroupDialog
           user={user}
           groups={groups}
-          violations={violations}
+          violations={validation.violations}
           onClose={() => setIsOpen(false)}
         />
       )}

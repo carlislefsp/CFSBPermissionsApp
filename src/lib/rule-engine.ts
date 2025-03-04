@@ -1,6 +1,6 @@
 import { User } from '@/types/user';
 import { Group } from '@/types/group';
-import { BusinessRule, ValidationResult, RuleContext } from '@/types/rules';
+import { BusinessRule, RuleContext } from '@/types/rules';
 import { businessRules } from './rules';
 
 interface RuleViolation {
