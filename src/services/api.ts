@@ -16,8 +16,6 @@ export class ApiService {
     const url = new URL(`${this.baseUrl}${endpoint}`);
     url.searchParams.append('code', this.apiCode);
 
-    console.log(`Making API request to: ${endpoint}`);
-
     try {
       const response = await fetch(url.toString(), {
         ...options,
@@ -28,14 +26,6 @@ export class ApiService {
           ...options.headers,
         },
       });
-
-      console.log(
-        `Response status for ${endpoint}: ${response.status} ${response.statusText}`,
-      );
-      console.log(
-        'Response headers:',
-        Object.fromEntries(response.headers.entries()),
-      );
 
       if (!response.ok) {
         const errorBody = await response.text();
@@ -64,7 +54,6 @@ export class ApiService {
       }
 
       const data = await response.json();
-      console.log(`Successfully received data from ${endpoint}`);
       return data;
     } catch (error) {
       console.error(`Failed API request to ${endpoint}:`, error);

@@ -14,7 +14,6 @@ export class UserService extends ApiService {
   }
 
   static async getUserGroups(oid: string): Promise<Group[]> {
-    console.log(`Fetching groups for user ${oid}...`);
     try {
       const groups = await this.fetch<Group[]>(`/users/${oid}/groups`);
 

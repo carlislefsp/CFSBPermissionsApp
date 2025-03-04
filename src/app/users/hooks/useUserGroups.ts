@@ -14,7 +14,6 @@ export function useUserGroups(
   return useQuery<Group[]>({
     queryKey: ['userGroups', userId],
     queryFn: async () => {
-      console.log('Fetching groups for user:', userId);
       const response = await fetch(`/api/users/${userId}/groups`);
       if (!response.ok) {
         console.error(
@@ -25,7 +24,6 @@ export function useUserGroups(
         throw new Error('Failed to fetch user groups');
       }
       const groups = await response.json();
-      console.log('Received groups:', groups);
       return groups;
     },
     enabled: options.enabled && !!userId,
