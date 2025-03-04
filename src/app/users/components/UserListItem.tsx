@@ -88,8 +88,9 @@ export function UserListItem({ user }: { user: User }) {
 
   // Validate user when groups are loaded
   const validation = React.useMemo(() => {
+    if (groupsLoading) return null;
     return ruleEngine.validateUser(user, groups);
-  }, [groups, user, ruleEngine]);
+  }, [groups, user, ruleEngine, groupsLoading]);
 
   // Set hasOverflow based on group count instead of container dimensions
   React.useEffect(() => {
@@ -196,13 +197,13 @@ export function UserListItem({ user }: { user: User }) {
       {/* Desktop Groups View */}
       <div className='hidden sm:block min-w-0 space-y-3'>
         {/* Rule Violations Banner */}
-        {validation.violations.length > 0 && (
+        {!groupsLoading && validation && validation.violations.length > 0 && (
           <div
-            className='bg-destructive/5 border border-destructive rounded-md p-3 space-y-2'
+            className='bg-destructive/10 border border-destructive rounded-md p-3 space-y-2'
             role='alert'
           >
             <div className='flex items-center gap-2 text-destructive font-medium'>
-              <div className='rounded-full bg-destructive text-destructive-foreground p-0.5 w-5 h-5 flex items-center justify-center'>
+              <div className='rounded-full bg-destructive/50 text-destructive-foreground p-0.5 w-5 h-5 flex items-center justify-center'>
                 <span className='font-bold text-sm'>!</span>
               </div>
               <ul className='space-y-1 text-sm text-destructive-foreground list-disc pl-5'>
@@ -238,7 +239,7 @@ export function UserListItem({ user }: { user: User }) {
         <UserGroupDialog
           user={user}
           groups={groups}
-          violations={validation.violations}
+          violations={validation?.violations}
           onClose={() => setIsOpen(false)}
         />
       )}
