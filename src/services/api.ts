@@ -16,28 +16,49 @@ export class ApiService {
     const url = new URL(`${this.baseUrl}${endpoint}`);
     url.searchParams.append('code', this.apiCode);
 
-    const response = await fetch(url.toString(), {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
+    try {
+      const response = await fetch(url.toString(), {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'X-API-Version': '1.0',
+          ...options.headers,
+        },
+      });
 
-    if (!response.ok) {
-      switch (response.status) {
-        case 400:
-          throw new Error('Invalid request parameters');
-        case 404:
-          throw new Error('Resource not found');
-        case 409:
-          throw new Error('Resource conflict');
-        default:
-          throw new Error(`API error: ${response.statusText}`);
+      if (!response.ok) {
+        const errorBody = await response.text();
+        console.error(`API error response for ${endpoint}:`, errorBody);
+        console.error('Request URL:', url.toString());
+        console.error('Request headers:', options.headers);
+
+        switch (response.status) {
+          case 400:
+            throw new Error(`Invalid request parameters: ${errorBody}`);
+          case 401:
+            throw new Error('Unauthorized - Authentication required');
+          case 403:
+            throw new Error('Forbidden - Insufficient permissions');
+          case 404:
+            throw new Error('Resource not found');
+          case 409:
+            throw new Error('Resource conflict');
+          case 500:
+            throw new Error(`Internal Server Error - ${errorBody}`);
+          default:
+            throw new Error(
+              `API error (${response.status}): ${response.statusText} - ${errorBody}`,
+            );
+        }
       }
-    }
 
-    return response.json();
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(`Failed API request to ${endpoint}:`, error);
+      throw error;
+    }
   }
 
   protected static async fetchWithPagination<T>(

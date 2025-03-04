@@ -23,11 +23,19 @@ import { UserGroupDialog } from './UserGroupDialog';
 // Hooks
 import { useUserGroups } from '../hooks/useUserGroups';
 
+// Rules
+import { createRuleEngine } from '@/lib/rule-engine';
+
 // Types
 import { User } from '@/types/user';
 
 export interface UserListItemProps {
   user: User;
+  violations: {
+    ruleId: string;
+    ruleName: string;
+    message: string;
+  }[];
 }
 
 /**
@@ -64,7 +72,7 @@ export interface UserListItemProps {
  * />
  * ```
  */
-export function UserListItem({ user }: UserListItemProps) {
+export function UserListItem({ user }: { user: User }) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [hasOverflow, setHasOverflow] = React.useState(false);
   const groupsContainerRef = React.useRef<HTMLDivElement>(null);
@@ -74,6 +82,15 @@ export function UserListItem({ user }: UserListItemProps) {
       enabled: true,
     },
   );
+
+  // Create rule engine instance
+  const ruleEngine = React.useMemo(() => createRuleEngine(), []);
+
+  // Validate user when groups are loaded
+  const validation = React.useMemo(() => {
+    if (groupsLoading) return null;
+    return ruleEngine.validateUser(user, groups);
+  }, [groups, user, ruleEngine, groupsLoading]);
 
   // Set hasOverflow based on group count instead of container dimensions
   React.useEffect(() => {
@@ -139,75 +156,93 @@ export function UserListItem({ user }: UserListItemProps) {
   );
 
   return (
-    <>
-      <article
-        className='p-4 grid grid-cols-1 gap-4 sm:grid-cols-[minmax(280px,340px)_1fr] sm:gap-4'
-        aria-label={`User ${user.firstname} ${user.lastname}`}
-      >
-        <div className='space-y-1 min-w-0'>
-          <h3 className='font-bold truncate'>
-            <span className='sr-only'>Name: </span>
-            {user.firstname} {user.lastname}
-          </h3>
-          <dl className='space-y-0.5'>
-            <div>
-              <dt className='sr-only'>Email: </dt>
-              <dd className='truncate'>{user.email}</dd>
+    <article
+      className='p-4 grid grid-cols-1 gap-4 sm:grid-cols-[minmax(280px,340px)_1fr] sm:gap-4'
+      aria-label={`User ${user.firstname} ${user.lastname}`}
+    >
+      <div className='space-y-1 min-w-0'>
+        <h3 className='font-bold truncate'>
+          <span className='sr-only'>Name: </span>
+          {user.firstname} {user.lastname}
+        </h3>
+        <dl className='space-y-0.5'>
+          <div>
+            <dt className='sr-only'>Email: </dt>
+            <dd className='truncate'>{user.email}</dd>
+          </div>
+          <div>
+            <dt className='sr-only'>Country: </dt>
+            <dd className='truncate'>
+              {user.country || 'No country specified'}
+            </dd>
+          </div>
+          <div className='text-gray-400 text-sm'>
+            <dt className='sr-only'>User Object Identifier: </dt>
+            <dd className='truncate'> {user.oid}</dd>
+          </div>
+        </dl>
+        {/* Mobile View Groups Button */}
+        {groups && groups.length > 0 && (
+          <Button
+            variant='secondary'
+            size='sm'
+            onClick={() => setIsOpen(true)}
+            className='mt-2 sm:hidden w-full justify-start gap-2'
+          >
+            <Pencil className='h-4 w-4' />
+            View {groups.length} {groups.length === 1 ? 'group' : 'groups'}
+          </Button>
+        )}
+      </div>
+      {/* Desktop Groups View */}
+      <div className='hidden sm:block min-w-0 space-y-3'>
+        {/* Rule Violations Banner */}
+        {!groupsLoading && validation && validation.violations.length > 0 && (
+          <div
+            className='bg-destructive/10 border border-destructive rounded-md p-3 space-y-2'
+            role='alert'
+          >
+            <div className='flex items-center gap-2 text-destructive font-medium'>
+              <div className='rounded-full bg-destructive/50 text-destructive-foreground p-0.5 w-5 h-5 flex items-center justify-center'>
+                <span className='font-bold text-sm'>!</span>
+              </div>
+              <ul className='space-y-1 text-sm text-destructive-foreground list-disc pl-5'>
+                {validation.violations.map(violation => (
+                  <li key={violation.ruleId}>
+                    <strong>{violation.ruleName}:</strong> {violation.message}
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div>
-              <dt className='sr-only'>Country: </dt>
-              <dd className='truncate'>
-                {user.country || 'No country specified'}
-              </dd>
-            </div>
-            <div className='text-gray-400 text-sm'>
-              <dt className='sr-only'>User Object Identifier: </dt>
-              <dd className='truncate'> {user.oid}</dd>
-            </div>
-          </dl>
-          {/* Mobile View Groups Button */}
-          {groups && groups.length > 0 && (
-            <Button
-              variant='secondary'
-              size='sm'
-              onClick={() => setIsOpen(true)}
-              className='mt-2 sm:hidden w-full justify-start gap-2'
-            >
-              <Pencil className='h-4 w-4' />
-              View {groups.length} {groups.length === 1 ? 'group' : 'groups'}
-            </Button>
-          )}
-        </div>
-        {/* Desktop Groups View */}
-        <div className='hidden sm:block min-w-0'>
-          {groupsLoading ? (
-            <div role='status' aria-busy='true' aria-live='polite'>
-              Loading groups...
-            </div>
-          ) : groups && groups.length > 0 ? (
-            isOpen ? (
-              renderOpenView()
-            ) : (
-              renderClosedView()
-            )
+          </div>
+        )}
+
+        {/* Groups List */}
+        {groupsLoading ? (
+          <div role='status' aria-busy='true' aria-live='polite'>
+            Loading groups...
+          </div>
+        ) : groups && groups.length > 0 ? (
+          isOpen ? (
+            renderOpenView()
           ) : (
-            <p
-              className='text-gray-500 text-sm'
-              aria-label='No groups assigned'
-            >
-              No groups
-            </p>
-          )}
-        </div>
-      </article>
+            renderClosedView()
+          )
+        ) : (
+          <p className='text-gray-500 text-sm' aria-label='No groups assigned'>
+            No groups
+          </p>
+        )}
+      </div>
       {/* Mobile Groups Dialog */}
       {isOpen && groups && groups.length > 0 && (
         <UserGroupDialog
           user={user}
           groups={groups}
+          violations={validation?.violations}
           onClose={() => setIsOpen(false)}
         />
       )}
-    </>
+    </article>
   );
 }

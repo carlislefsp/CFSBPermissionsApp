@@ -5,7 +5,8 @@ import { ApiService } from './api';
 
 export class UserService extends ApiService {
   static async getUsers(): Promise<User[]> {
-    return this.fetch<User[]>('/users');
+    const users = await this.fetch<User[]>('/users');
+    return users;
   }
 
   static async getUserById(oid: string): Promise<User> {
@@ -13,7 +14,14 @@ export class UserService extends ApiService {
   }
 
   static async getUserGroups(oid: string): Promise<Group[]> {
-    return this.fetch<Group[]>(`/users/${oid}/groups`);
+    try {
+      const groups = await this.fetch<Group[]>(`/users/${oid}/groups`);
+
+      return groups;
+    } catch (error) {
+      console.error(`Error fetching groups for user ${oid}:`, error);
+      throw error;
+    }
   }
 
   static async getUserGroupPermissions(
@@ -59,9 +67,5 @@ export class UserService extends ApiService {
         method: 'DELETE',
       },
     );
-  }
-
-  static async getAllUserGroups(): Promise<Record<string, Group[]>> {
-    return this.fetch<Record<string, Group[]>>('/user-groups');
   }
 }

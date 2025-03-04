@@ -101,8 +101,6 @@ export function UserSearchCombobox({
 
   // Handle search submission
   const handleSearch = React.useCallback(() => {
-    console.log('Search triggered with query:', searchQuery);
-
     if (searchQuery.length >= 3) {
       const searchResults = users.filter(
         user =>
@@ -110,12 +108,10 @@ export function UserSearchCombobox({
           user.firstname?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           user.lastname?.toLowerCase().includes(searchQuery.toLowerCase()),
       );
-      console.log('Found results:', searchResults.length);
-      console.log('Calling onFilter with results');
+
       onFilter(searchResults, searchQuery);
       setOpen(false);
     } else {
-      console.log('Query too short, showing all users');
       onFilter(users, '');
     }
   }, [users, searchQuery, onFilter]);
@@ -194,7 +190,6 @@ export function UserSearchCombobox({
             !e.metaKey &&
             !e.shiftKey
           ) {
-            console.log('Enter key pressed in Command');
             e.preventDefault();
             e.stopPropagation();
             handleSearch();
@@ -205,7 +200,6 @@ export function UserSearchCombobox({
         <CommandInput
           placeholder='Type at least 3 characters and press Enter to search...'
           onValueChange={value => {
-            console.log('Search value changed:', value);
             setSearchQuery(value);
           }}
           value={searchQuery}

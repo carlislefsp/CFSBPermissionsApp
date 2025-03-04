@@ -2,6 +2,11 @@ import { User } from '@/types/user';
 
 export interface LazyUserListItemProps {
   user: User;
+  violations: {
+    ruleId: string;
+    ruleName: string;
+    message: string;
+  }[];
 }
 
 export interface SearchTerm {
@@ -11,16 +16,19 @@ export interface SearchTerm {
 
 export interface UserListProps {
   filterFn?: (user: User) => boolean;
-  currentTab?: 'customers' | 'employees';
-  onTabChange?: (tab: 'customers' | 'employees') => void;
-  allUsers?: {
+  currentTab: 'customers' | 'employees';
+  onTabChange: (tab: 'customers' | 'employees') => void;
+  allUsers: {
     customers: User[];
     employees: User[];
   };
   selectedUser?: User;
-  onSelectUser: (user: User | undefined) => void;
+  onSelectUser: (user?: User) => void;
   searchFilteredUsers: User[];
-  searchTerms: SearchTerm[];
+  searchTerms: {
+    id: string;
+    term: string;
+  }[];
   onSearch: (filtered: User[], searchTerm?: string) => void;
   onRemoveSearchTerm: (termId: string) => void;
 }

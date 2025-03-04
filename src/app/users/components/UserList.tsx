@@ -26,7 +26,8 @@ import { useUsers } from '../hooks/useUsers';
 import { useDevice } from '@/hooks/useDevice';
 
 // Types
-import { LazyUserListItemProps, UserListProps } from '../types';
+import { UserListProps } from '../types';
+import { User } from '@/types/user';
 
 /**
  * Main component for displaying and managing the list of users with search, filtering, and lazy loading
@@ -95,21 +96,11 @@ export function UserList({
   // Handle keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      console.log('Key pressed:', {
-        key: e.key,
-        altKey: e.altKey,
-        ctrlKey: e.ctrlKey,
-        metaKey: e.metaKey,
-        shiftKey: e.shiftKey,
-        target: e.target instanceof HTMLElement ? e.target.tagName : 'unknown',
-      });
-
       // Ignore shortcuts when typing in an input
       if (
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement
       ) {
-        console.log('Ignoring shortcut - typing in input');
         return;
       }
 
@@ -121,7 +112,6 @@ export function UserList({
         !e.metaKey &&
         !e.shiftKey
       ) {
-        console.log('Search focus shortcut triggered');
         e.preventDefault();
         searchRef.current?.querySelector('button')?.click();
       }
@@ -135,7 +125,6 @@ export function UserList({
         !e.metaKey &&
         !(navigator.platform.includes('Mac') ? e.altKey : e.ctrlKey)
       ) {
-        console.log('Reset shortcut triggered');
         e.preventDefault();
         handleReset();
       }
@@ -149,7 +138,6 @@ export function UserList({
         !e.shiftKey &&
         selectedUser
       ) {
-        console.log('Clear selection shortcut triggered');
         e.preventDefault();
         onSelectUser(undefined);
       }
@@ -157,18 +145,10 @@ export function UserList({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleReset, onSelectUser, selectedUser]);
+  }, [searchRef, handleReset, isMac]);
 
   // Apply filters
   const filteredUsers = useMemo(() => {
-    console.log('Recalculating filteredUsers:', {
-      totalUsers: users.length,
-      searchFiltered: searchFilteredUsers.length,
-      hasFilterFn: !!filterFn,
-      hasSelectedUser: !!selectedUser,
-      searchTerms,
-    });
-
     // If we have search terms, apply them to the current tab's users
     if (searchTerms.length > 0 && allUsers && currentTab) {
       const currentTabUsers =
@@ -195,7 +175,6 @@ export function UserList({
       result = result.filter(user => user.oid === selectedUser.oid);
     }
 
-    console.log('Final filtered results:', result.length);
     return result;
   }, [
     users,
@@ -364,7 +343,11 @@ export function UserList({
             </div>
           )}
       </div>
-      <ul className='border rounded-lg' role='list' aria-label='User list'>
+      <ul
+        className='space-y-2 border rounded-lg divide-y'
+        role='list'
+        aria-label='User list'
+      >
         {filteredUsers.map(user => (
           <LazyUserListItem key={user.oid} user={user} />
         ))}
@@ -394,7 +377,7 @@ export function UserList({
  * }} />
  * ```
  */
-function LazyUserListItem({ user }: LazyUserListItemProps) {
+function LazyUserListItem({ user }: { user: User }) {
   const { ref, inView } = useInView({
     triggerOnce: true,
     threshold: 0.1,
