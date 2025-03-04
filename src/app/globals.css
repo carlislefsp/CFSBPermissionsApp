@@ -97,10 +97,10 @@
     /* hsl(240, 3.7%, 15.9%) */
     --accent-foreground: 0 0% 98%;
     /* hsl(0, 0%, 98%) */
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 60% 30%;
     /* hsl(0, 62.8%, 30.6%) */
-    --destructive-foreground: 0 0% 98%;
-    /* hsl(0, 0%, 98%) */
+    --destructive-foreground: 0 30% 80%;
+    /* hsl(0, 30%, 80%) */
     --border: 240 3.7% 15.9%;
     /* hsl(240, 3.7%, 15.9%) */
     --input: 240 3.7% 15.9%;
