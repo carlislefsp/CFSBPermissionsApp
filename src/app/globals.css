@@ -4,65 +4,119 @@
 
 @layer base {
   :root {
+    /* Light Theme */
     --background: 0 0% 100%;
+    /* #FFFFFF */
     --foreground: 240 10% 3.9%;
+    /* #0A0A0B */
     --card: 0 0% 100%;
+    /* #FFFFFF */
     --card-foreground: 240 10% 3.9%;
+    /* #0A0A0B */
     --popover: 0 0% 100%;
+    /* #FFFFFF */
     --popover-foreground: 240 10% 3.9%;
+    /* #0A0A0B */
     --primary: 215 20.2% 65.1%;
+    /* #8BA2C2 */
     --primary-foreground: 0 0% 98%;
+    /* #FAFAFA */
     --secondary: 240 4.8% 95.9%;
+    /* #F3F3F5 */
     --secondary-foreground: 240 5.9% 10%;
+    /* #191919 */
     --muted: 240 4.8% 95.9%;
+    /* #F3F3F5 */
     --muted-foreground: 240 3.8% 46.1%;
+    /* #6E7072 */
     --accent: 240 4.8% 95.9%;
+    /* #F3F3F5 */
     --accent-foreground: 240 5.9% 10%;
+    /* #191919 */
     --destructive: 0 84.2% 60.2%;
+    /* #EF4444 */
     --destructive-foreground: 0 0% 98%;
+    /* #FAFAFA */
     --border: 240 5.9% 90%;
+    /* #E5E5E7 */
     --input: 240 5.9% 90%;
+    /* #E5E5E7 */
     --ring: 240 10% 3.9%;
+    /* #0A0A0B */
     --chart-1: 12 76% 61%;
+    /* #EA6B4F */
     --chart-2: 173 58% 39%;
+    /* #2A9B94 */
     --chart-3: 197 37% 24%;
+    /* #254E5A */
     --chart-4: 43 74% 66%;
+    /* #EBC050 */
     --chart-5: 27 87% 67%;
+    /* #F4804D */
     --radius: 0.5rem;
 
     /* Group Type Colors */
-    --group-system-color: #ef4444;
-    --group-role-color: #14b8a6;
-    --group-ecommerce-color: #22c55e;
-    --group-channel-color: #3b82f6;
-    --group-customer-color: #6b7280;
+    --group-system-color: 0 84.2% 60.2%;
+    /* #EF4444 */
+    --group-role-color: 168 75% 40%;
+    /* #14B8A6 */
+    --group-ecommerce-color: 142 70% 45%;
+    /* #22C55E */
+    --group-channel-color: 217 91% 60%;
+    /* #3B82F6 */
+    --group-customer-color: 220 9% 46%;
+    /* #6B7280 */
   }
 
   .dark {
     --background: 240 10% 3.9%;
+    /* #0A0A0B */
     --foreground: 0 0% 98%;
+    /* #FAFAFA */
     --card: 240 10% 3.9%;
+    /* #0A0A0B */
     --card-foreground: 0 0% 98%;
+    /* #FAFAFA */
     --popover: 240 10% 3.9%;
+    /* #0A0A0B */
     --popover-foreground: 0 0% 98%;
+    /* #FAFAFA */
     --primary: 0 0% 98%;
+    /* #FAFAFA */
     --primary-foreground: 240 5.9% 10%;
+    /* #191919 */
     --secondary: 240 3.7% 15.9%;
+    /* #27272A */
     --secondary-foreground: 0 0% 98%;
+    /* #FAFAFA */
     --muted: 240 3.7% 15.9%;
+    /* #27272A */
     --muted-foreground: 240 5% 64.9%;
+    /* #A1A1AA */
     --accent: 240 3.7% 15.9%;
+    /* #27272A */
     --accent-foreground: 0 0% 98%;
+    /* #FAFAFA */
     --destructive: 0 62.8% 30.6%;
+    /* #7F1D1D */
     --destructive-foreground: 0 0% 98%;
+    /* #FAFAFA */
     --border: 240 3.7% 15.9%;
+    /* #27272A */
     --input: 240 3.7% 15.9%;
+    /* #27272A */
     --ring: 240 4.9% 83.9%;
+    /* #D4D4D8 */
     --chart-1: 220 70% 50%;
+    /* #2563EB */
     --chart-2: 160 60% 45%;
+    /* #2E9B7B */
     --chart-3: 30 80% 55%;
+    /* #F59E0B */
     --chart-4: 280 65% 60%;
+    /* #9333EA */
     --chart-5: 340 75% 55%;
+    /* #EC4899 */
   }
 }
 

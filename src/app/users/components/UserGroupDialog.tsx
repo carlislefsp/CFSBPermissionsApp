@@ -85,23 +85,15 @@ export function UserGroupDialog({
         <div className='space-y-4'>
           {/* Rule Violations Banner */}
           {violations.length > 0 && (
-            <div
-              className='bg-red-50 border border-red-200 rounded-md p-3 space-y-2'
-              role='alert'
-            >
-              <div className='flex items-center gap-2 text-red-700 font-medium'>
-                <div className='rounded-full bg-red-600 text-white p-0.5 w-5 h-5 flex items-center justify-center'>
-                  <span className='font-bold text-sm'>!</span>
+            <div className='p-4 border-t'>
+              {violations.map(violation => (
+                <div
+                  key={violation.ruleId}
+                  className='p-2 bg-destructive/10 text-destructive rounded-md text-sm'
+                >
+                  <strong>{violation.ruleName}:</strong> {violation.message}
                 </div>
-                <span>Problem Found:</span>
-              </div>
-              <ul className='space-y-1 text-sm text-red-600 list-disc pl-5'>
-                {violations.map(violation => (
-                  <li key={violation.ruleId}>
-                    <strong>{violation.ruleName}:</strong> {violation.message}
-                  </li>
-                ))}
-              </ul>
+              ))}
             </div>
           )}
           {/* Groups List */}
