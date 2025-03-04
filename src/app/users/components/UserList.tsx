@@ -12,7 +12,8 @@
 
 // React/Next.js
 import { useInView } from 'react-intersection-observer';
-import { useMemo, useEffect, useRef, useCallback } from 'react';
+import { useMemo, useEffect, useRef, useCallback, useState } from 'react';
+import { cn } from '@/lib/utils';
 
 // Components
 import { UserListItem, UserListItemPlaceholder } from '.';
@@ -84,13 +85,20 @@ export function UserList({
   const { data: users = [], isLoading, error } = useUsers();
   const searchRef = useRef<HTMLDivElement>(null);
   const { isMobile, isMac } = useDevice();
+  const [isResetting, setIsResetting] = useState(false);
+  const [resetTrigger, setResetTrigger] = useState(0);
 
   // Add reset handler
-  const handleReset = useCallback(() => {
+  const handleReset = useCallback(async () => {
+    setIsResetting(true);
+    setResetTrigger(prev => prev + 1);
     onSelectUser(undefined);
     onSearch([], '');
     // Remove all search terms
     searchTerms.forEach(term => onRemoveSearchTerm(term.id));
+    // Add a small delay to show the animation
+    await new Promise(resolve => setTimeout(resolve, 300));
+    setIsResetting(false);
   }, [onSelectUser, onSearch, searchTerms, onRemoveSearchTerm]);
 
   // Handle keyboard shortcuts
@@ -145,7 +153,7 @@ export function UserList({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [searchRef, handleReset, isMac]);
+  }, [searchRef, handleReset, isMac, onSelectUser, selectedUser]);
 
   // Apply filters
   const filteredUsers = useMemo(() => {
@@ -223,16 +231,18 @@ export function UserList({
             onSelect={onSelectUser}
             onFilter={onSearch}
             showKeyboardHint={!isMobile}
+            resetTrigger={resetTrigger}
           />
         </div>
         <Button
           variant='ghost'
           onClick={handleReset}
+          disabled={isResetting}
           className='h-10 shrink-0 gap-2'
           aria-label='Reset all filters'
           title='Reset all filters'
         >
-          <RotateCcw className='h-4 w-4' />
+          <RotateCcw className={cn('h-4 w-4', isResetting && 'animate-spin')} />
           <span>Reset</span>
           {!isMobile && (
             <kbd className='hidden h-5 select-none items-center rounded border bg-secondary px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex'>

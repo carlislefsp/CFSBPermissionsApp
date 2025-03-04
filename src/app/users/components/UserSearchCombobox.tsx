@@ -9,7 +9,7 @@
 'use client';
 
 import * as React from 'react';
-import { Check, X, Search } from 'lucide-react';
+import { Check, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -33,6 +33,8 @@ interface UserSearchComboboxProps {
   onSelect: (user: User | undefined) => void;
   onFilter: (filtered: User[], searchTerm?: string) => void;
   showKeyboardHint?: boolean;
+  resetTrigger?: number;
+  disabled?: boolean;
 }
 
 /**
@@ -56,6 +58,7 @@ interface UserSearchComboboxProps {
  * @param props.onSelect - Callback when a user is selected from the dropdown
  * @param props.onFilter - Callback with filtered users and current search term
  * @param props.showKeyboardHint - Whether to show keyboard shortcut hint (default: true)
+ * @param props.resetTrigger - External trigger to reset the combobox
  *
  * @example
  * ```tsx
@@ -64,6 +67,7 @@ interface UserSearchComboboxProps {
  *   onSelect={(user) => setSelectedUser(user)}
  *   onFilter={(filtered, term) => handleFilteredResults(filtered, term)}
  *   showKeyboardHint={!isMobile}
+ *   resetTrigger={resetTrigger}
  * />
  * ```
  */
@@ -72,12 +76,23 @@ export function UserSearchCombobox({
   onSelect,
   onFilter,
   showKeyboardHint = true,
+  resetTrigger = 0,
+  disabled = false,
 }: UserSearchComboboxProps) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
   const [searchQuery, setSearchQuery] = React.useState('');
   const [activeIndex, setActiveIndex] = React.useState(-1);
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
+  // Add effect to handle external reset trigger
+  React.useEffect(() => {
+    if (resetTrigger > 0) {
+      setValue('');
+      setSearchQuery('');
+      setOpen(false);
+    }
+  }, [resetTrigger]);
 
   // Only filter users for the dropdown
   const dropdownFilteredUsers = React.useMemo(() => {
@@ -165,14 +180,6 @@ export function UserSearchCombobox({
     },
     [open, dropdownFilteredUsers, activeIndex, handleSelect],
   );
-
-  const handleReset = React.useCallback(() => {
-    setValue('');
-    setSearchQuery('');
-    onSelect(undefined);
-    onFilter(users, ''); // Reset to show all users
-    setOpen(false);
-  }, [onSelect, onFilter, users]);
 
   // Pre-render the Command component
   const commandComponent = React.useMemo(
@@ -288,12 +295,13 @@ export function UserSearchCombobox({
               aria-hidden='true'
             />
           )}
-          <Popover open={open} onOpenChange={setOpen}>
+          <Popover open={open && !disabled} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant='outline'
                 role='combobox'
                 aria-expanded={open}
+                disabled={disabled}
                 className='w-[300px] justify-between relative'
               >
                 <Search className='h-4 w-4 shrink-0 opacity-50' />
@@ -307,22 +315,11 @@ export function UserSearchCombobox({
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className='w-[300px] p-0' align='start'>
+            <PopoverContent className='w-[400px] p-0' align='start'>
               {commandComponent}
             </PopoverContent>
           </Popover>
         </div>
-        {value && (
-          <Button
-            variant='ghost'
-            size='icon'
-            onClick={handleReset}
-            className='h-10 w-10'
-            aria-label='Clear search'
-          >
-            <X className='h-4 w-4' />
-          </Button>
-        )}
       </div>
     </div>
   );
