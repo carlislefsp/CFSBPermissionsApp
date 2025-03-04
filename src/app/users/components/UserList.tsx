@@ -87,18 +87,25 @@ export function UserList({
   const { isMobile, isMac } = useDevice();
   const [isResetting, setIsResetting] = useState(false);
   const [resetTrigger, setResetTrigger] = useState(0);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   // Add reset handler
   const handleReset = useCallback(async () => {
+    // Start animation immediately
     setIsResetting(true);
+    setIsButtonDisabled(true);
+
+    // Execute state updates synchronously
     setResetTrigger(prev => prev + 1);
     onSelectUser(undefined);
     onSearch([], '');
     // Remove all search terms
     searchTerms.forEach(term => onRemoveSearchTerm(term.id));
-    // Add a small delay to show the animation
+
+    // Keep animation going for a bit
     await new Promise(resolve => setTimeout(resolve, 300));
     setIsResetting(false);
+    setIsButtonDisabled(false);
   }, [onSelectUser, onSearch, searchTerms, onRemoveSearchTerm]);
 
   // Handle keyboard shortcuts
@@ -232,24 +239,32 @@ export function UserList({
             onFilter={onSearch}
             showKeyboardHint={!isMobile}
             resetTrigger={resetTrigger}
+            disabled={isButtonDisabled}
           />
         </div>
-        <Button
-          variant='ghost'
-          onClick={handleReset}
-          disabled={isResetting}
-          className='h-10 shrink-0 gap-2'
-          aria-label='Reset all filters'
-          title='Reset all filters'
-        >
-          <RotateCcw className={cn('h-4 w-4', isResetting && 'animate-spin')} />
-          <span>Reset</span>
-          {!isMobile && (
-            <kbd className='hidden h-5 select-none items-center rounded border bg-secondary px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex'>
-              {isMac ? '⌃R' : 'Alt+R'}
-            </kbd>
-          )}
-        </Button>
+        {(selectedUser || searchTerms.length > 0) && (
+          <Button
+            variant='ghost'
+            onClick={handleReset}
+            disabled={isButtonDisabled}
+            className='h-10 shrink-0 gap-2'
+            aria-label='Reset all filters'
+            title='Reset all filters'
+          >
+            <RotateCcw
+              className={cn(
+                'h-4 w-4 transition-transform',
+                isResetting && 'animate-spin duration-300',
+              )}
+            />
+            <span>Reset</span>
+            {!isMobile && (
+              <kbd className='hidden h-5 select-none items-center rounded border bg-secondary px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex'>
+                {isMac ? '⌃R' : 'Alt+R'}
+              </kbd>
+            )}
+          </Button>
+        )}
       </div>
       <div className='flex flex-wrap items-center gap-2 text-sm text-muted-foreground'>
         {/* Showing x users message */}
@@ -262,7 +277,7 @@ export function UserList({
         <div className='flex flex-wrap gap-2'>
           {/* Selected user badge */}
           {selectedUser && (
-            <Badge variant='secondary' className='gap-1.5'>
+            <Badge variant='active' className='gap-1.5'>
               User: {selectedUser.email}
               <Button
                 variant='ghost'
@@ -277,7 +292,7 @@ export function UserList({
           )}
           {/* Search term badges */}
           {searchTerms.map(term => (
-            <Badge key={term.id} variant='secondary' className='gap-1.5'>
+            <Badge key={term.id} variant='active' className='gap-1.5'>
               Search: {term.term}
               <Button
                 variant='ghost'
@@ -333,7 +348,7 @@ export function UserList({
           otherTabMatches.length > 0 &&
           currentTab &&
           onTabChange && (
-            <div className='flex items-center gap-2 rounded-md bg-muted px-3 py-1'>
+            <div className='flex items-center gap-2 rounded-md bg-info text-info-foreground px-3 py-1'>
               <span>
                 {otherTabMatches.length}{' '}
                 {otherTabMatches.length === 1 ? 'match' : 'matches'} in{' '}
@@ -341,7 +356,7 @@ export function UserList({
               </span>
               <Button
                 variant='link'
-                className='h-auto p-0'
+                className='h-auto p-0 text-info-foreground'
                 onClick={() =>
                   onTabChange(
                     currentTab === 'customers' ? 'employees' : 'customers',
