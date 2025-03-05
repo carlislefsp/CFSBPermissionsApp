@@ -76,16 +76,16 @@ export function UserGroupDialog({
 }: UserGroupDialogProps) {
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent>
-        <DialogHeader>
+      <DialogContent className='h-[100dvh] overflow-y-auto p-0 sm:h-auto sm:p-6'>
+        <DialogHeader className='p-4 sm:p-0'>
           <DialogTitle>
             Groups for {user.firstname} {user.lastname}
           </DialogTitle>
         </DialogHeader>
-        <div className='space-y-4'>
+        <div className='space-y-4 p-4 sm:p-0'>
           {/* Rule Violations Banner */}
           {violations.length > 0 && (
-            <div className='p-4 border-t'>
+            <div className='border-t'>
               {violations.map(violation => (
                 <div
                   key={violation.ruleId}

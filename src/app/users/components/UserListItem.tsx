@@ -235,14 +235,17 @@ export function UserListItem({ user }: { user: User }) {
         )}
       </div>
       {/* Mobile Groups Dialog */}
-      {isOpen && groups && groups.length > 0 && (
-        <UserGroupDialog
-          user={user}
-          groups={groups}
-          violations={validation?.violations}
-          onClose={() => setIsOpen(false)}
-        />
-      )}
+      {isOpen &&
+        groups &&
+        groups.length > 0 &&
+        !window.matchMedia('(min-width: 640px)').matches && (
+          <UserGroupDialog
+            user={user}
+            groups={groups}
+            violations={validation?.violations}
+            onClose={() => setIsOpen(false)}
+          />
+        )}
     </article>
   );
 }
