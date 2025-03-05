@@ -92,7 +92,7 @@ export function UserGroupList({
                 checked={true}
                 style={
                   {
-                    '--checkbox-color': `var(${type.colorVar})`,
+                    '--checkbox-color': `hsl(var(${type.colorVar}))`,
                   } as React.CSSProperties
                 }
                 className='border-[var(--checkbox-color)] data-[state=checked]:bg-[var(--checkbox-color)] data-[state=checked]:border-[var(--checkbox-color)]'
@@ -142,7 +142,7 @@ export function UserGroupList({
                     checked={true}
                     style={
                       {
-                        '--checkbox-color': `var(${type.colorVar})`,
+                        '--checkbox-color': `hsl(var(${type.colorVar}))`,
                       } as React.CSSProperties
                     }
                     className='border-[var(--checkbox-color)] data-[state=checked]:bg-[var(--checkbox-color)] data-[state=checked]:border-[var(--checkbox-color)]'
