@@ -5,8 +5,8 @@
 @layer base {
   :root {
     /* Light Theme */
-    --background: 0 0% 100%;
-    /* hsl(0, 0%, 100%) */
+    --background: 50 20% 97%;
+    /* hsl(50, 20%, 97%) */
     --foreground: 240 10% 3.9%;
     /* hsl(240, 10%, 3.9%) */
     --active: 211 100% 90%;
