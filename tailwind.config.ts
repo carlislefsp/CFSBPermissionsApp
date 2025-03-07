@@ -12,6 +12,14 @@ export default {
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
+        uil1: {
+          DEFAULT: 'hsl(var(--uil1))',
+          foreground: 'hsl(var(--uil1-foreground))',
+        },
+        uil2: {
+          DEFAULT: 'hsl(var(--uil2))',
+          foreground: 'hsl(var(--uil2-foreground))',
+        },
         active: {
           DEFAULT: 'hsl(var(--active))',
           foreground: 'hsl(var(--active-foreground))',

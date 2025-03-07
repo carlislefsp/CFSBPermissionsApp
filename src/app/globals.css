@@ -2,17 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+
+/* CFS Brands Brand Blue : #004b88  hsl(207, 100%, 27%)*/
+
 @layer base {
   :root {
-    /* Light Theme */
-    --background: 50 20% 97%;
-    /* hsl(50, 20%, 97%) */
+    /* Theme Colors */
+    --background: 0 0% 94%;
+    /* hsl(210, 100%, 96%) */
     --foreground: 240 10% 3.9%;
     /* hsl(240, 10%, 3.9%) */
+
+    --uil1: 0 0% 96%;
+    /* hsl(210, 40%, 98%) */
+    --uil1-foreground: 240 10% 3.9%;
+    /* hsl(240, 10%, 3.9%) */
+
+    --uil2: 0 0% 99%;
+    /* hsl(210, 4%, 98%) */
+    --uil2-foreground: 240 10% 3.9%;
+    /* hsl(240, 10%, 3.9%) */
+
+    /* Interactive States */
     --active: 211 100% 90%;
     /* hsl(211, 100%, 90%) */
     --active-foreground: 211 100% 20%;
     /* hsl(211, 100%, 20%) */
+
+    /* Component Colors */
     --card: 0 0% 100%;
     /* hsl(0, 0%, 100%) */
     --card-foreground: 240 10% 3.9%;
@@ -21,14 +38,20 @@
     /* hsl(0, 0%, 100%) */
     --popover-foreground: 240 10% 3.9%;
     /* hsl(240, 10%, 3.9%) */
+
+    /* Primary Colors */
     --primary: 215 20.2% 65.1%;
     /* hsl(215, 20.2%, 65.1%) */
     --primary-foreground: 0 0% 98%;
     /* hsl(0, 0%, 98%) */
+
+    /* Secondary Colors */
     --secondary: 240 4.8% 95.9%;
     /* hsl(240, 4.8%, 95.9%) */
     --secondary-foreground: 240 5.9% 10%;
     /* hsl(240, 5.9%, 10%) */
+
+    /* UI Element Colors */
     --muted: 240 4.8% 95.9%;
     /* hsl(240, 4.8%, 95.9%) */
     --muted-foreground: 240 3.8% 46.1%;
@@ -37,6 +60,8 @@
     /* hsl(240, 4.8%, 95.9%) */
     --accent-foreground: 240 5.9% 10%;
     /* hsl(240, 5.9%, 10%) */
+
+    /* Status Colors */
     --destructive: 0 100% 53%;
     /* hsl(0, 100%, 53%) */
     --destructive-foreground: 0 100% 30%;
@@ -45,12 +70,16 @@
     /* hsl(30, 50%, 90%) */
     --info-foreground: 13 89% 15%;
     /* hsl(30, 80%, 20%) */
-    --border: 240 5.9% 90%;
+
+    /* Form Elements */
+    --border: 214 32% 91%;
     /* hsl(240, 5.9%, 90%) */
-    --input: 240 5.9% 90%;
+    --input: 211 100% 95%;
     /* hsl(240, 5.9%, 90%) */
     --ring: 240 10% 3.9%;
     /* hsl(240, 10%, 3.9%) */
+
+    /* Chart Colors */
     --chart-1: 12 76% 61%;
     /* hsl(12, 76%, 61%) */
     --chart-2: 173 58% 39%;
@@ -61,6 +90,8 @@
     /* hsl(43, 74%, 66%) */
     --chart-5: 27 87% 67%;
     /* hsl(27, 87%, 67%) */
+
+    /* Border Radius */
     --radius: 0.5rem;
 
     /* Group Type Colors */
@@ -77,14 +108,19 @@
   }
 
   .dark {
+    /* Theme Colors */
     --background: 240 10% 3.9%;
     /* hsl(240, 10%, 3.9%) */
     --foreground: 0 0% 98%;
     /* hsl(0, 0%, 98%) */
+
+    /* Interactive States */
     --active: 211 100% 90%;
     /* hsl(211, 100%, 90%) */
     --active-foreground: 211 100% 20%;
     /* hsl(211, 100%, 20%) */
+
+    /* Component Colors */
     --card: 240 10% 3.9%;
     /* hsl(240, 10%, 3.9%) */
     --card-foreground: 0 0% 98%;
@@ -93,14 +129,20 @@
     /* hsl(240, 10%, 3.9%) */
     --popover-foreground: 0 0% 98%;
     /* hsl(0, 0%, 98%) */
+
+    /* Primary Colors */
     --primary: 0 0% 98%;
     /* hsl(0, 0%, 98%) */
     --primary-foreground: 240 5.9% 10%;
     /* hsl(240, 5.9%, 10%) */
+
+    /* Secondary Colors */
     --secondary: 240 3.7% 15.9%;
     /* hsl(240, 3.7%, 15.9%) */
     --secondary-foreground: 0 0% 98%;
     /* hsl(0, 0%, 98%) */
+
+    /* UI Element Colors */
     --muted: 240 3.7% 15.9%;
     /* hsl(240, 3.7%, 15.9%) */
     --muted-foreground: 240 5% 64.9%;
@@ -109,6 +151,8 @@
     /* hsl(240, 3.7%, 15.9%) */
     --accent-foreground: 0 0% 98%;
     /* hsl(0, 0%, 98%) */
+
+    /* Status Colors */
     --destructive: 0 60% 30%;
     /* hsl(0, 62.8%, 30.6%) */
     --destructive-foreground: 0 30% 80%;
@@ -117,12 +161,16 @@
     /* hsl(30, 20%, 40%) */
     --info-foreground: 35 100% 90%;
     /* hsl(30, 80%, 90%) */
+
+    /* Form Elements */
     --border: 240 3.7% 15.9%;
     /* hsl(240, 3.7%, 15.9%) */
     --input: 240 3.7% 15.9%;
     /* hsl(240, 3.7%, 15.9%) */
     --ring: 240 4.9% 83.9%;
     /* hsl(240, 4.9%, 83.9%) */
+
+    /* Chart Colors */
     --chart-1: 220 70% 50%;
     /* hsl(220, 70%, 50%) */
     --chart-2: 160 60% 45%;

@@ -230,7 +230,7 @@ export function UserList({
     );
 
   return (
-    <div className='space-y-4'>
+    <div className='space-y-4 bg-uil1 rounded-lg p-4'>
       <div className='flex gap-2'>
         <div ref={searchRef} className='contents'>
           <UserSearchCombobox
@@ -369,7 +369,7 @@ export function UserList({
           )}
       </div>
       <ul
-        className='space-y-2 border rounded-lg divide-y'
+        className='bg-uil2 space-y-2 border rounded-lg divide-y'
         role='list'
         aria-label='User list'
       >
