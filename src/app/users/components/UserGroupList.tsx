@@ -86,7 +86,7 @@ export function UserGroupList({
           return (
             <label
               key={group.id}
-              className='flex items-center gap-1.5 text-sm rounded-md cursor-pointer px-1.5 h-7 bg-muted hover:bg-muted/80'
+              className='flex items-center gap-1.5 text-sm rounded-md cursor-pointer px-1.5 h-7 bg-transparent hover:bg-muted/80'
             >
               <Checkbox
                 checked={true}
