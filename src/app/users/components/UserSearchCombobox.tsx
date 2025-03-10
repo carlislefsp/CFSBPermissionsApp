@@ -302,7 +302,7 @@ export function UserSearchCombobox({
                 role='combobox'
                 aria-expanded={open}
                 disabled={disabled}
-                className='w-[300px] justify-between relative'
+                className='w-[300px] justify-between relative bg-input-background text-input-foreground border-input-border'
               >
                 <Search className='h-4 w-4 shrink-0 opacity-50' />
                 <span className='ml-2 truncate flex-1 text-left'>

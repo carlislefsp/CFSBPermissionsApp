@@ -71,12 +71,18 @@
     --info-foreground: 13 89% 15%;
     /* hsl(30, 80%, 20%) */
 
-    /* Form Elements */
+    /* Global Border */
     --border: 214 32% 91%;
-    /* hsl(240, 5.9%, 90%) */
-    --input: 211 100% 95%;
-    /* hsl(240, 5.9%, 90%) */
+    /* hsl(214, 32%, 91%) */
     --ring: 240 10% 3.9%;
+    /* hsl(240, 10%, 3.9%) */
+
+    /* Form Elements */
+    --input-border: 214 32% 91%;
+    /* hsl(214, 100%, 91%) */
+    --input-background: 210 40% 98%;
+    /* hsl(210, 40%, 96%) */
+    --input-foreground: 240 10% 3.9%;
     /* hsl(240, 10%, 3.9%) */
 
     /* Chart Colors */
@@ -95,16 +101,16 @@
     --radius: 0.5rem;
 
     /* Group Type Colors */
-    --group-system-color: 0 84.2% 60.2%;
-    /* hsl(0, 84.2%, 60.2%) */
-    --group-role-color: 168 75% 40%;
-    /* hsl(168, 75%, 40%) */
-    --group-ecommerce-color: 142 70% 45%;
-    /* hsl(142, 70%, 45%) */
-    --group-channel-color: 217 91% 60%;
-    /* hsl(217, 91%, 60%) */
-    --group-customer-color: 220 9% 46%;
-    /* hsl(220, 9%, 46%) */
+    --group-system-color: 355 55% 57%;
+    /* hsl(355, 55%, 57%) */
+    --group-role-color: 32 100% 71%;
+    /* hsl(32, 100%, 71%) */
+    --group-ecommerce-color: 113 38% 46%;
+    /* hsl(113, 38%, 46%) */
+    --group-channel-color: 206 100% 41%;
+    /* hsl(206, 100%, 41%) */
+    --group-customer-color: 215 16% 47%;
+    /* hsl(215, 16%, 47%) */
   }
 
   .dark {
@@ -114,6 +120,15 @@
     --foreground: 0 0% 98%;
     /* hsl(0, 0%, 98%) */
 
+    --uil1: 240 10% 6%;
+    /* hsl(240, 10%, 10%) */
+    --uil1-foreground: 240 10% 3.9%;
+    /* hsl(240, 10%, 3.9%) */
+
+    --uil2: 240 10% 9%;
+    /* hsl(210, 4%, 98%) */
+    --uil2-foreground: 240 10% 3.9%;
+    /* hsl(240, 10%, 3.9%) */
     /* Interactive States */
     --active: 211 100% 90%;
     /* hsl(211, 100%, 90%) */
@@ -162,13 +177,16 @@
     --info-foreground: 35 100% 90%;
     /* hsl(30, 80%, 90%) */
 
-    /* Form Elements */
+    /* Global Elements */
     --border: 240 3.7% 15.9%;
-    /* hsl(240, 3.7%, 15.9%) */
-    --input: 240 3.7% 15.9%;
     /* hsl(240, 3.7%, 15.9%) */
     --ring: 240 4.9% 83.9%;
     /* hsl(240, 4.9%, 83.9%) */
+
+    /* Form Elements */
+    --input-border: 240 3.7% 15.9%;
+    --input-background: 240 10% 3.9%;
+    --input-foreground: 0 0% 98%;
 
     /* Chart Colors */
     --chart-1: 220 70% 50%;
