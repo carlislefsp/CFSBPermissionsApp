@@ -409,7 +409,7 @@ function LazyUserListItem({ user }: { user: User }) {
   });
 
   return (
-    <li ref={ref} className='border-b last:border-b-0' role='listitem'>
+    <li ref={ref} role='listitem'>
       {inView ? <UserListItem user={user} /> : <UserListItemPlaceholder />}
     </li>
   );
