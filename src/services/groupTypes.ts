@@ -1,6 +1,6 @@
 import { Group, GroupType } from '@/types/group';
 import { ApiService } from './api';
-
+//comment
 export class GroupTypeService extends ApiService {
   static async getGroupTypes(): Promise<GroupType[]> {
     return this.fetch<GroupType[]>('/grouptypes');
