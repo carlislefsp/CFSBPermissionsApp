@@ -19,3 +19,10 @@ export interface Group {
   created: string | null;
   updated: string | null;
 }
+
+export interface GroupType {
+  id: number;
+  name: string;
+  created: string;
+  updated: string;
+}
